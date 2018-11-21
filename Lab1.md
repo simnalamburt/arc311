@@ -1,71 +1,139 @@
 # Lab 1:
 
-In this section you will launch a CloudFormation stack that will create Amazon Virtual Private Cloud (VPC)s environment, an application running in ECS and a Cloud9 IDE Instance that you will use in the rest of the workshop.
+In this lab, you will launch a CloudFormation stack that will create Amazon Virtual Private Cloud (VPC)s environment, an application running in ECS and a Cloud9 IDE Instance that you will use in the rest of the workshop.
 
 Cloud9 is only used in this case to avoid requiring participants from having to install the AWS CLI or use tools like curl directly from their laptop.
 
 ## Step-by-step Instructions
 
-1. Go the AWS Management Console, click Services then select CloudFormation under Management Tools.
+### Setting Up the Environment
 
-2. In the CloudFormation console, click Create stack and in Step 1, choose S3 Link and paste :
-You can launch this CloudFormation stack in your account:
+1. Go the AWS Management Console, click **Services** then select **CloudFormation** under Management Tools.  Additionally, you can simply type 
 
-| AWS Region | Short name | | 
-| -- | -- | -- |
-| US East (Ohio) | us-east-2 | [![cloudformation-launch-button](images/cloudformation-launch-stack.png)](https://console.aws.amazon.com/cloudformation/home?region=us-east-2#/stacks/new?stackName=ARC311&templateURL=https://s3-us-west-2.amazonaws.com/arc311-region1-cloudformation/master.yaml) |
-| US East (N. Virginia) | us-east-1 | [![cloudformation-launch-button](images/cloudformation-launch-stack.png)](https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=ARC311&templateURL=https://s3-us-west-2.amazonaws.com/arc311-region1-cloudformation/master.yaml) |
-| US West (Oregon) | us-west-2 | [![cloudformation-launch-button](images/cloudformation-launch-stack.png)](https://console.aws.amazon.com/cloudformation/home?region=us-west-2#/stacks/new?stackName=ARC311&templateURL=https://s3-us-west-2.amazonaws.com/arc311-region1-cloudformation/master.yaml) |
-| US West (N. California) | us-west-1 | [![cloudformation-launch-button](images/cloudformation-launch-stack.png)](https://console.aws.amazon.com/cloudformation/home?region=us-west-1#/stacks/new?stackName=ARC311&templateURL=https://s3-us-west-2.amazonaws.com/arc311-region1-cloudformation/master.yaml) |
-| Canada (Central) | ca-central-1 | [![cloudformation-launch-button](images/cloudformation-launch-stack.png)](https://console.aws.amazon.com/cloudformation/home?region=ca-central-1#/stacks/new?stackName=ARC311&templateURL=https://s3-us-west-2.amazonaws.com/arc311-region1-cloudformation/master.yaml) |
-| EU (Paris) | eu-west-3 | [![cloudformation-launch-button](images/cloudformation-launch-stack.png)](https://console.aws.amazon.com/cloudformation/home?region=eu-west-3#/stacks/new?stackName=ARC311&templateURL=https://s3-us-west-2.amazonaws.com/arc311-region1-cloudformation/master.yaml) |
-| EU (London) | eu-west-2 | [![cloudformation-launch-button](images/cloudformation-launch-stack.png)](https://console.aws.amazon.com/cloudformation/home?region=eu-west-2#/stacks/new?stackName=ARC311&templateURL=https://s3-us-west-2.amazonaws.com/arc311-region1-cloudformation/master.yaml) |
-| EU (Ireland) | eu-west-1 | [![cloudformation-launch-button](images/cloudformation-launch-stack.png)](https://console.aws.amazon.com/cloudformation/home?region=eu-west-1#/stacks/new?stackName=ARC311&templateURL=https://s3-us-west-2.amazonaws.com/arc311-region1-cloudformation/master.yaml) |
-| EU (Frankfurt) | eu-central-1 | [![cloudformation-launch-button](images/cloudformation-launch-stack.png)](https://console.aws.amazon.com/cloudformation/home?region=eu-central-1#/stacks/new?stackName=ARC311&templateURL=https://s3-us-west-2.amazonaws.com/arc311-region1-cloudformation/master.yaml) |
-| Asia Pacific (Seoul) | ap-northeast-2 | [![cloudformation-launch-button](images/cloudformation-launch-stack.png)](https://console.aws.amazon.com/cloudformation/home?region=ap-northeast-2#/stacks/new?stackName=ARC311&templateURL=https://s3-us-west-2.amazonaws.com/arc311-region1-cloudformation/master.yaml) |
-| Asia Pacific (Tokyo) | ap-northeast-1 | [![cloudformation-launch-button](images/cloudformation-launch-stack.png)](https://console.aws.amazon.com/cloudformation/home?region=ap-northeast-1#/stacks/new?stackName=ARC311&templateURL=https://s3-us-west-2.amazonaws.com/arc311-region1-cloudformation/master.yaml) |
-| Asia Pacific (Sydney) | ap-southeast-2 | [![cloudformation-launch-button](images/cloudformation-launch-stack.png)](https://console.aws.amazon.com/cloudformation/home?region=ap-southeast-2#/stacks/new?stackName=ARC311&templateURL=https://s3-us-west-2.amazonaws.com/arc311-region1-cloudformation/master.yaml) |
-| Asia Pacific (Singapore) | ap-southeast-1 | [![cloudformation-launch-button](images/cloudformation-launch-stack.png)](https://console.aws.amazon.com/cloudformation/home?region=ap-southeast-1#/stacks/new?stackName=ARC311&templateURL=https://s3-us-west-2.amazonaws.com/arc311-region1-cloudformation/master.yaml) |
-| Asia Pacific (Mumbai) | ap-south-1 |  [![cloudformation-launch-button](images/cloudformation-launch-stack.png)](https://console.aws.amazon.com/cloudformation/home?region=ap-south-1#/stacks/new?stackName=ARC311&templateURL=https://s3-us-west-2.amazonaws.com/arc311-region1-cloudformation/master.yaml) |
-| South America (São Paulo) | sa-east-1 |  [![cloudformation-launch-button](images/cloudformation-launch-stack.png)](https://console.aws.amazon.com/cloudformation/home?region=sa-east-1#/stacks/new?stackName=ARC311&templateURL=https://s3-us-west-2.amazonaws.com/arc311-region1-cloudformation/master.yaml) |
+2. First, we need to launch the CloudFormaton Template to create our environment.
+You can launch this CloudFormation stack in your account by licking on the **Launch Stack** button below, then clicking **Next**.
 
-3. On the next screen, Step 2, enter a Stack name such as VPC-Cloud9-<YOUR INITIALS> and click Next
+Region| Launch
+------|-----
+| US East (Ohio) - (us-east-2) | [![cloudformation-launch-button](images/cloudformation-launch-stack.png)](https://console.aws.amazon.com/cloudformation/home?region=us-east-2#/stacks/new?stackName=ARC311&templateURL=https://s3-us-west-2.amazonaws.com/arc311-region1-cloudformation/master.yaml) |
+| US East (N. Virginia) - (us-east-1) | [![cloudformation-launch-button](images/cloudformation-launch-stack.png)](https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=ARC311&templateURL=https://s3-us-west-2.amazonaws.com/arc311-region1-cloudformation/master.yaml) |
+| US West (Oregon) - (us-west-2) | [![cloudformation-launch-button](images/cloudformation-launch-stack.png)](https://console.aws.amazon.com/cloudformation/home?region=us-west-2#/stacks/new?stackName=ARC311&templateURL=https://s3-us-west-2.amazonaws.com/arc311-region1-cloudformation/master.yaml) |
 
-4. On the Configure Stack Options page, accept all the defaults and click Next. Finally on the Review page, click Create stack.
-It will take a few minutes for the Stack to create. Wait until the stack is fully launched and shows a Status of CREATE_COMPLETE.
 
-5. Open the VPC console and from the right hand pane, click VPCs.  You should see 2 VPCs created by Cloudformatin as well as the default VPC.
+3. On the next screen, Step 2, leace the *Stack Name* at the default of **ARC311** and click **Next**.
+> Note:  If you are sharing accounts, and someone has this stack name, this stack will fail.  We suggest you do not share accounts, but if you have no other alternative, make sure you launch in  different regions.
 
-6. Select VPC A.  This VPC has your application running in it.  This is a containerized application that ECS is managing.  Click on the Route table.
+4. On the Configure Stack Options page, accept all the defaults and click **Next**. Finally, on the Review page, check the **IAM Resource Acknowledgement** box and click **Create Stack**.
+It will take a approximitely 10 minutes for the Stack to create. Wait until the stack is fully launched and shows a Status of CREATE_COMPLETE.
+> This CloudFormation template will launch multiple child stacks.  Once complete, you will have 2 VPCs with subnets, NAT Gateways, security groups, etc.  Additonally, it will launch a Cloud9 instance, an Elastic Container Service (ECS) cluster, an Application Load Balancer, and 2 services that will run in the ECS cluster (Website service and product service)
 
-> You will notice that the route table has a 0.0.0.0/0 route to the Internet gateway and a local route for the VPC.  Other than that, there are no other routes.  This is important to note because our Cloud9 instance is running in VPC B.  If we want to route from Cloud9 to the our application over private IPs, we will not be able to.  Let's test this.
+### Configuring VPC Flow Logs
+Some of our traffic will be using public IP addresses and then we will make our application private.  VPC flow logs will help us confirm that we are successful in dowing so.  We will write the VPC flow logs to S3 and later use Athena to query them.  You can learn more about VPC flow logs and the record syntax here in the [VPC Flow Flogs Documentation.](https://docs.aws.amazon.com/vpc/latest/userguide/flow-logs.html)
 
-7. From the Cloudformation Console, thick on your stack.  When the stack creation is complete, click the Outputs tab for the stack and select the value for Cloud9 IDE. Open that URL in a new browser tab to load your IDE environment.
+7. From the Cloudformation Console, click on your main ARC311 stack (the master stack).  
 
-8. In the lower pane, you will have a terminal that looks like the below.  From the Cloudformation outputs tab, copy the private dns name for the application and attempt to curl.
+	![Cloudformation Console](./images/parent-stack.png)
 
+8. When the stack creation is complete, click the **Outputs** tab for the stack and find the S3 bucket ARN. Copy this ARN to your clipboard or notepad.  You will need this in a later step.
+
+	![Cloudformation Console](./images/cloud9-output.png)
+
+2.  Open the [*VPC console*](https://console.aws.amazon.com/vpc/) in a *NEW* tab in your browser.  *Look in the top right-had corner and confirm that you are in the same region you launched your template in!*  This will save a lot of back and forth in the management console.  From the right-hand navigation pane, click **Your VPCs**.  You should see 2 VPCs created by Cloudformatin as well as the default VPC.
+
+	![VPC Console](./images/vpc-console1.png)
+
+2. From the top left-hand side of the VPC console, click in the **Select a VPC** drop down and select VPC1.  This VPC has your application running in it.  This is a containerized application that ECS is managing.  
+
+	![VPC Console](./images/select-vpc1.png)
+	
+3.  Let's turn on VPC flow logs for these VPCs.  Once the VPC is selected, in the bottom pane, click on the **Flow Logs** tab.
+	
+	![Cloudformation Console](./images/vpc-flow-logs-create.png)
+
+4. Click **Create flow log**.
+
+5. From the *Filter* drop down select **ALL**.  Next, choose the **Send to a S3 bucket** radio buttion.  You can get the bucket name from the **Outputs** tab from the main ARC311 stack.  The arn should look like this: `arn:aws:s3:::arc311-s3bucket-1erbhppavsb0w-loggingbucket-1dfykskj12345`
+
+	![Cloudformation Console](./images/create-flow-log.png)
+
+6. Click **Create**.
+
+7. Repeat these same steps for **VPC2**.  Remember to select VPC 2 in the top left hand corner, then create the flow log to the same S3 bucket ARN.
+
+### Testing the application using Cloud9 IDE
+
+While it may seem odd to use an IDE to use a tool like curl, Cloud9 comes with a terminal, so you can run commands in your VPC from your browser.  Your Cloud9 instance is running in VPC2.  The only way to access your application is via the Application Load balancer that sits in the public subnets in VPC1.  The application is in the provate subnets in VPC1.
+
+7. From the Cloudformation Console, click on your main ARC311 stack (the master stack).  
+
+	![Cloudformation Console](./images/parent-stack.png)
+
+8. When the stack creation is complete, click the **Outputs** tab for the stack and select the value for **Cloud9 IDE**. Open that URL in a new browser tab to load your IDE environment.
+
+	![Cloudformation Console](./images/cloud9-output.png)
+
+8. In the lower pane of your **Cloud9 IDE**, you will have a terminal that looks like the below.  
+
+	![CLoudformation Console](./images/cloud9-terminal.png)
+
+9.  Go back to your CloudFormation console so we can get the DNS name of your ALB.  From the CloudFormation **Outputs** tab, copy the dns name for the application and attempt to curl.
+
+	![Cloudformation Console](./images/alb-urls.png)
+	
+10.  From your CLoud9 IDE, paste DNS name for the product service.  You should see a JSON response.
 
 ```
-curl myprivateapp
+curl MYSTACKNAME.MYREGION.elb.amazonaws.com/products
 ```
 
+> We just accessed out service that lives in a private subnet in a different VPC via a Application Load Balancer in a public subnet.  We can continue to build services that have a public endpoint, or we can make the service private.
 
-> This should fail.  To allow our Cloud9 instance to connect to our application, we could use VPC peering to route between the 2 VPCs, but in our case we want to use private link.  PrivateLink will allow us to whitelist the consumers of the service by account, IAM user or IAM role and it also does not add a route in the route table.  Route tables can have up to a total of 100 routes and at the scale of this workshop, that is fine.  However, when we scale our services and have more than 100 VPCs that need to connect to our service over private IP space, Private Link becomes a better option for us.
+### Create NLB for PrivateLink
+Now that we know that the service is functional and can be reached via the public internet.  There are many reasons why you may not want your service to be accessible to the public internet, so let's set up *Private link* so that our Cloud9 instance or perhaps another microservice in our VPC2 can connect. 
 
-9. Let's set up Private link so that our Cloud9 instance or perhaps another microservice in our VPC B can connect.  First, we need to create an endpoint service in VPC A for our application.  Open the EC2 console at https://console.aws.amazon.com/ec2/
+1.  First, we need to create an endpoint service in VPC2 for our application.  Open the **EC2 console** at https://console.aws.amazon.com/ec2/.  Verify you are in the **same Region**
 
-10. From the left hand pane, choose Load Balancers.
+2. From the left hand pane, choose **Load Balancers**.
 
-11. Click on the Create Load Balancer button
+3. Click on the **Create Load Balancer** button
 
-        You will see 3 options of load balancers.  We will need to use the Layer 4 load balancer which is the Network Load Balancer.  Find the Network Load Balancer in the middle and select Create.
+4.  You will see 3 options of load balancers.  We will need to use the Layer 4 load balancer which is the Network Load Balancer.  Find the *Network Load Balancer* in the middle and select **Create**.
 
-12. Give your load balancer a name link PrivateLink-<MYINITIALS>.  Select VPC-A Public subnet.  Leave the rest of the options at the defaults.
+5. For the *Configure Load Balancer* Page:
+	* Give your load balancer a name like `PrivateLink-<MYINITIALS>`.  
+	* Select the **internal** radio button for *Scheme*
+	* Leave the listeners as default
+	* Select **VPC1** as the VPC and click the boxes for each Availability zone to select the Private subnets for each zone.  
+	
+6. Click **Next: Configure Routing**.  
 
-13. Click Next Configure Routing.  Select the target group for our application.
-[finish rest of the load balancer]
+7. Under *Target Group*:
+	* Select **New target group**
+	* For *Name*, type `ProductService`
+	* Leave **Instance** select as the *Target Type*
+	
+	![Cloudformation Console](./images/target-group.png)
+8. In the *Health Checks* section:
+	* Select **HTTP* as the protocol
+	* Type `/products` as the path
+	* Leave the rest of the health check settings as default
 
-14. Open the Amazon VPC console at https://console.aws.amazon.com/vpc/.  In the navigation pane, choose Endpoint Services, Create Endpoint Service.
+	![Cloudformation Console](./images/health-check.png)
+
+9. Click **Next:Register Targets**.
+
+10. On the *Step 3: Register Targets* page, click on the *4 ECS Hosts* in the bottom pane and click the **Add to Registered** button.
+
+	![Cloudformation Console](./images/register-instance.png)
+
+11. Click **Next: Review** and lastly click **Create** on the *Step 4: Review* page.
+
+> We now have an internal Network Load Balancer with our backend ECS Hosts registered.  This is what our architecture looks like right now.  
+> 	![Cloudformation Console](./images/nlb-create.png)
+
+### Create Endpoint Service for PrivateLink
+
+14. Open the *VPC console*.  In the left-handnavigation pane, choose **Endpoint Services**, then  click **Create Endpoint Service**.
 
 15. For Associate Network Load Balancers, select the Network Load Balancers to associate with the endpoint service.
 

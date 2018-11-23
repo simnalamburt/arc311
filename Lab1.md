@@ -8,10 +8,11 @@ Cloud9 is only used in this case to avoid requiring participants from having to 
 
 ### Setting Up the Environment
 
-1. Go the AWS Management Console, click **Services** then select **CloudFormation** under Management Tools.  Additionally, you can simply type 
+1. Go the AWS Management Console, click **Services** then select **CloudFormation** under Management Tools.  Additionally, you can simply type `CloudFormation` in the search box.
 
 2. First, we need to launch the CloudFormaton Template to create our environment.
-You can launch this CloudFormation stack in your account by licking on the **Launch Stack** button below, then clicking **Next**.
+You can launch this CloudFormation stack in your account by *right-clicking* on the **Launch Stack** button and opening in a new browser tab. In the new tab, click **Next**.
+
 
 Region| Launch
 ------|-----
@@ -20,7 +21,7 @@ Region| Launch
 | US West (Oregon) - (us-west-2) | [![cloudformation-launch-button](images/cloudformation-launch-stack.png)](https://console.aws.amazon.com/cloudformation/home?region=us-west-2#/stacks/new?stackName=ARC311&templateURL=https://s3-us-west-2.amazonaws.com/arc311-region1-cloudformation/master.yaml) |
 
 
-3. On the next screen, Step 2, leace the *Stack Name* at the default of **ARC311** and click **Next**.
+3. On the next screen, Step 2, leave the *Stack Name* at the default of **ARC311** and click **Next**.
 > Note:  If you are sharing accounts, and someone has this stack name, this stack will fail.  We suggest you do not share accounts, but if you have no other alternative, make sure you launch in  different regions.
 
 4. On the Configure Stack Options page, accept all the defaults and click **Next**. Finally, on the Review page, check the **IAM Resource Acknowledgement** box and click **Create Stack**.

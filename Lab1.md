@@ -114,7 +114,7 @@ Now that we know that the service is functional and can be reached via the publi
 	
 	![Cloudformation Console](./images/target-group.png)
 8. In the *Health Checks* section:
-	* Select **HTTP* as the protocol
+	* Select **HTTP** as the protocol from the drop down.
 	* Type `/products` as the path
 	* Leave the rest of the health check settings as default
 
@@ -129,58 +129,75 @@ Now that we know that the service is functional and can be reached via the publi
 11. Click **Next: Review** and lastly click **Create** on the *Step 4: Review* page.
 
 > We now have an internal Network Load Balancer with our backend ECS Hosts registered.  This is what our architecture looks like right now.  
-> 	![Cloudformation Console](./images/nlb-create.png)
+> 	![Create NLB](./images/nlb-create.png)
 
 ### Create Endpoint Service for PrivateLink
 
-14. Open the *VPC console*.  In the left-handnavigation pane, choose **Endpoint Services**, then  click **Create Endpoint Service**.
+1. Open the *VPC console*.  
 
-15. For Associate Network Load Balancers, select the Network Load Balancers to associate with the endpoint service.
+2. In the left-hand navigation pane, choose **Endpoint Services**, then  click the **Create Endpoint Service** button.
 
-16. For Require acceptance for endpoint, select the check box to accept connection requests to your service manually. If you do not select this option, endpoint connections are automatically accepted.
+3. For *Associate Network Load Balancers*, select the `Privatelink-MyInitials` Network Load Balancer you created earlier to associate with the endpoint service.
 
-17. Choose Create service.
+	![Create Endpoint Service](./images/create-endpoint-service.png)
 
-18. After you've created your endpoint service configuration, you can control which service consumers can create an interface endpoint to connect to your service. Service consumers are IAM principals—IAM users, IAM roles, and AWS accounts.
+3. For *Require acceptance for endpoint*, select the check box for **Acceptance Reqired** to accpt requests to your service manually. If you do not select this option, endpoint connections are automatically accepted.
 
-19. You should still be in the VPC console.  In the navigation pane, choose Endpoint Services and select your endpoint service.
+4. Click **Create Service**.  You should get a success message like the one below.  Notice that you will be allocaed a DNS name for the *Endpoint Service*.  Once finsihed, click **Close**.
 
-20. Choose Actions, Add principals to whitelist.  Specify * to add permissions for all principals.  NOTE:  this is not following the least privilage security model and we are only doing this for the purpose of this lab.  We suggest you whitelist the appropriate accounts, IAM roles and users.
+	![Create Endpoint Service](./images/create-endpoint-service-sucess.png)
 
-21. Choose Add to Whitelisted principals.
+5. Now that you have created an *endpoint service*, you can control which service consumers can create an interface endpoint to connect to your service. Service consumers are IAM principals—IAM users, IAM roles, and AWS accounts.
+
+19. You should still be in the *VPC console*, under Endpoint Services. Select your **Endpoint Service**.
+
+20. In the lower pane, click on the **Whitelisted Principals** tab.  
+	* Next, Choose **Add principals to whitelist**.  
+	* Specify `*` in the ARN to add permissions for all principals. 
+	* Click **Add to Whitelisted principals**
+	
+> NOTE:  This is not following the least privilage security model and we are only doing this for the purpose of this lab.  We suggest you whitelist the appropriate accounts, IAM roles and users.  You can add multiple principals at the step too.
 
 
+![Create Endpoint Service](./images/whitelist.png)
 
-22. Now we have a service, but we need to create an interface endpoint in VPC B
+### Create Interface Endpoint for Private Link
+At this point, we have our service behind a NLB and configured as an *Endpoint Service*.  However, we have no consumers of our service yet.  This is what our architecture looks like right now:
 
-23. To create an interface endpoint to an endpoint service, open the Amazon VPC console at https://console.aws.amazon.com/vpc/.
+![Create Endpoint Service](./images/endpoint-service-diagram.png)
 
-24. In the navigation pane, choose Endpoints, Create Endpoint.
+1.  Let's create an interface endpoint in VPC2 so that our *Cloud9* instance, or any other service we might spin up in VPC2 can communicate to our service in VPC1.
 
-25. For Service category, choose Find service by name.
+2. From the VPC Console, under Endpoint Services, make sure your Endpoint Service is selected.  	
+	* You will need to copy the **Service Name** which should look similar to: `com.amazonaws.vpce.us-east-2.vpce-svc-0e6f539a5f123456a`
 
-26. For Service Name, enter the name of the service (for example, com.amazonaws.vpce.us-east-1.vpce-svc-0e123abc123198abc) and choose Verify.
+	![Create Endpoint Service](./images/service-name.png)
 
-27. Complete the following information and then choose Create endpoint.
+3. From the VPC console, choose **Endpoints** (**NOTE** this is different than *Endpoint Service*), then click the **Create Endpoint** button.
+	* For *Service category*, choose **Find service by name**.
+	* For *Service Name*, paste the name of the service you copied earlier(Example: `com.amazonaws.vpce.us-east-2.vpce-svc-0e6f539a5f123456a`) and click **Verify**.
 
-28. For VPC, select a VPC in which to create the endpoint.
+	![Create Endpoint Service](./images/create-endpoint1.png)
 
-29. For Subnets, select the subnets (Availability Zones) in which to create the endpoint network interfaces.
+4. In the bottom section of *Create Endpoint*:
+	* For *VPC*, select **VPC2** from the dropdown.  This is where our Cloud9 instance is located.
+	* For *Subnets*, select the subnets (Availability Zones) in which to create the endpoint network interfaces.  You can sleect the public subnets for VPC 2 (1 in each AZ)
+	* For *Security group*, select the **VPC2** security group to associate with the endpoint network interfaces.  This will allow all traffic with a source of 10.200.0.0/16
 
-30. For Security group, select the security groups to associate with the endpoint network interfaces.
+5.  Click **Create Endpoint**.
 
-> Now we need to accept the interface endpoint. After you've created an endpoint service, service consumers for which you've added permission can create an interface endpoint to connect to your service.
+> Now we need to **accept** the interface endpoint. After you've created an Endpoint Service, service consumers for which you've added permission can create an interface endpoint to connect to your service.
 
 > We have specified that acceptance is required for connection requests, therefore you must make a API call or use the console to accept or reject interface endpoint connection requests to your endpoint service. After an interface endpoint is accepted, it becomes available.
 
 
-31. Open the Amazon VPC console
+6. In the left-hand navigation pane, choose **Endpoint Services** and select the **Endpoint Service** that we created earlier.
 
-32. In the navigation pane, choose Endpoint Services and select your endpoint service.
+7. In the lower pane, click the **Endpoint Connections** tab. This tab lists endpoint connections that are currently pending your approval. 
 
-33. The Endpoint Connections tab lists endpoint connections that are currently pending your approval. Select the endpoint, choose Actions, and choose Accept.
+8. Select the *endpoint*, choose the **Actions** drop down, and click **Accept Endpoint Connection Request**.  
 
-34. Copy the DNS name from your endpoint service.
+34. Copy the DNS name from your endpoint.  It should be similar to 
 
 35. Now we can test our service again!  From the Cloud9 IDE, open that URL in a new browser tab to load your IDE environment.  We will use curl against the DNS name of our endpoint service.
 

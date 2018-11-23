@@ -28,7 +28,7 @@ It will take a approximitely 10 minutes for the Stack to create. Wait until the 
 > This CloudFormation template will launch multiple child stacks.  Once complete, you will have 2 VPCs with subnets, NAT Gateways, security groups, etc.  Additonally, it will launch a Cloud9 instance, an Elastic Container Service (ECS) cluster, an Application Load Balancer, and 2 services that will run in the ECS cluster (Website service and product service)
 
 ### Configuring VPC Flow Logs
-Some of our traffic will be using public IP addresses and then we will make our application private.  VPC flow logs will help us confirm that we are successful in dowing so.  We will write the VPC flow logs to S3 and later use Athena to query them.  You can learn more about VPC flow logs and the record syntax here in the [VPC Flow Flogs Documentation.](https://docs.aws.amazon.com/vpc/latest/userguide/flow-logs.html)
+Some of our traffic will be using public IP addresses and then we will make our application private.  VPC flow logs will help us confirm that we are successful in doing so.  We will write the *VPC flow logs* to *S3* and later use *Athena* to query them.  You can learn more about VPC flow logs and the record syntax here in the [VPC Flow Flogs Documentation.](https://docs.aws.amazon.com/vpc/latest/userguide/flow-logs.html)
 
 7. From the Cloudformation Console, click on your main ARC311 stack (the master stack).  
 
@@ -79,19 +79,49 @@ While it may seem odd to use an IDE to use a tool like curl, Cloud9 comes with a
 9.  Go back to your CloudFormation console so we can get the DNS name of your ALB.  From the CloudFormation **Outputs** tab, copy the dns name for the application and attempt to curl.
 
 	![Cloudformation Console](./images/alb-urls.png)
-	
-10.  From your CLoud9 IDE, paste DNS name for the product service.  You should see a JSON response.
+10.  From your Cloud9 IDE, paste the command below for the website. Be sure you copy your DNS name for **your load balancer** from the **Outputs** tab. We want to check that we get a `200 OK` as a response.
 
-```
-curl MYSTACKNAME.MYREGION.elb.amazonaws.com/products
-```
+	```console
+	curl -vo /dev/null  MYSTACKNAME.MYREGION.elb.amazonaws.com/
+	```
+	> You should get a response like:
+	
+	```console
+			  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+		                                 Dload  Upload   Total   Spent    Left  Speed
+		  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0*   Trying 18.220.31.125...
+		* TCP_NODELAY set
+		* Connected to arc311-12345678.us-east-2.elb.amazonaws.com (18.220.31.125) port 80 (#0)
+		> GET / HTTP/1.1
+		> Host: arc311-12345678.us-east-2.elb.amazonaws.com
+		> User-Agent: curl/7.53.1
+		> Accept: */*
+		> 
+		< HTTP/1.1 200 OK
+		< Date: Mon, 19 Nov 2018 20:24:18 GMT
+		< Content-Type: text/html; charset=utf-8
+		< Content-Length: 658
+		< Connection: keep-alive
+		< 
+		{ [658 bytes data]
+		100   658  100   658    0     0   8578      0 --:--:-- --:--:-- --:--:--  8657
+		* Connection #0 to host arc311-12345678.us-east-2.elb.amazonaws.com left intact
+	```
+
+11. From your Cloud9 IDE, paste DNS name for the product service.  You should see a JSON response directly from the Product Service of our application.
+
+	```
+	curl MYSTACKNAME.MYREGION.elb.amazonaws.com/products
+	```
 
 > We just accessed out service that lives in a private subnet in a different VPC via a Application Load Balancer in a public subnet.  We can continue to build services that have a public endpoint, or we can make the service private.
 
 ### Create NLB for PrivateLink
 Now that we know that the service is functional and can be reached via the public internet.  There are many reasons why you may not want your service to be accessible to the public internet, so let's set up *Private link* so that our Cloud9 instance or perhaps another microservice in our VPC2 can connect. 
 
-1.  First, we need to create an endpoint service in VPC2 for our application.  Open the **EC2 console** at https://console.aws.amazon.com/ec2/.  Verify you are in the **same Region**
+First, we need to create an *Endpoint Service* in *VPC1* for our application.  An *Endpoint Service* is application in your VPC that you configure as an AWS PrivateLink service.
+
+1.  Open the **EC2 console** at https://console.aws.amazon.com/ec2/.  Verify you are in the **Correct Region!**
 
 2. From the left hand pane, choose **Load Balancers**.
 
@@ -100,7 +130,7 @@ Now that we know that the service is functional and can be reached via the publi
 4.  You will see 3 options of load balancers.  We will need to use the Layer 4 load balancer which is the Network Load Balancer.  Find the *Network Load Balancer* in the middle and select **Create**.
 
 5. For the *Configure Load Balancer* Page:
-	* Give your load balancer a name like `PrivateLink-<MYINITIALS>`.  
+	* Give your load balancer a name like `arc311-nlb`.  
 	* Select the **internal** radio button for *Scheme*
 	* Leave the listeners as default
 	* Select **VPC1** as the VPC and click the boxes for each Availability zone to select the Private subnets for each zone.  
@@ -109,13 +139,12 @@ Now that we know that the service is functional and can be reached via the publi
 
 7. Under *Target Group*:
 	* Select **New target group**
-	* For *Name*, type `ProductService`
+	* For *Name*, type `NewWebsiteService`
 	* Leave **Instance** select as the *Target Type*
 	
 	![Cloudformation Console](./images/target-group.png)
 8. In the *Health Checks* section:
-	* Select **HTTP** as the protocol from the drop down.
-	* Type `/products` as the path
+	* Select **TCP** as the protocol from the drop down.
 	* Leave the rest of the health check settings as default
 
 	![Cloudformation Console](./images/health-check.png)
@@ -127,9 +156,78 @@ Now that we know that the service is functional and can be reached via the publi
 	![Cloudformation Console](./images/register-instance.png)
 
 11. Click **Next: Review** and lastly click **Create** on the *Step 4: Review* page.
+12. We will need the ARN (Amazon Resource Name) for the target group.  From the left hand pane, select **Target Groups**.
+13. Select the **NewWebsiteService** and copy the ARN from the bottom pane.
+	![Cloudformation Console](./images/targetgroup-arn.png)
+
+### Create ECS Services to Run Behind Network Load Balancer
+We now have a Network load balancer, but now we need to create a website and product service in ECS to register to our NLB.  We will do this configuration via CLI from our Cloud9 instance.
+
+1.  Browse back to your Cloud9 IDE.  We will start by creating the `Product Service`.
+
+2. In the top pane, next to the *Welcome* tab, click on the `+` icon and choose **New File**.
+	
+	![Cloudformation Console](./images/cloud9-newfile.png)
+
+3.  Paste the arn at the top of the file or open a 2nd **New File** to store the arn temporarily.
+
+4.  Within a **New File** in Cloud9 paste the following JSON.
+
+
+	**IMPORTANT: Update the `targetGroupArn` with the ARN you just pasted in another tab.**
+
+
+	```console
+	{
+    "serviceName": "new-product-service",
+    "taskDefinition": "product-service",
+    "loadBalancers": [
+        {
+            "targetGroupArn": "arn:aws:elasticloadbalancing:us-east-2:1234567890:targetgroup/NewWebsiteService/5065959d16408f6e",    
+            "containerName": "product-service",
+            "containerPort": 8001
+        }
+    ],
+    "desiredCount": 2
+}
+	```
+5. At teh top of the browser, click **File** then click **Save As** and name the file `new-product-service.json`.
+6. Click **Save**.
+7. Now let's create the JSON configuration for the *Website Service*.  Open a **New File Tab** in Cloud9.  Paste in the following JSON.
+
+	**IMPORTANT: You will need to update the `targetGroupArn` with the ARN you pasted in another tab.**
+
+	```
+	{
+	    "serviceName": "new-website",
+	    "taskDefinition": "website-service",
+	    "loadBalancers": [
+	        {
+	            "targetGroupArn": "arn:aws:elasticloadbalancing:us-east-2:1234567890:targetgroup/NewWebsiteService/5065959d16408f6e",  
+	            "containerName": "website-service",
+	            "containerPort": 8000
+	        }
+	    ],
+	    "desiredCount": 2
+	}
+	```
+8. At the top of the browser, click **File** then click **Save As** and name the file `new-website-service.json`.
+9. Click **Save**.
+
+10.  From the terminal, we will create the new ECS services for the Website Service and the Product Service.  Run the following to create the Product Service referencing the JSON we just saved.
+
+```
+aws ecs create-service --service-name new-product-service --cluster ARC311 --cli-input-json file://new-product-service.json
+```
+11. Next, run the following to create the Website Service.
+
+```
+aws ecs create-service --service-name new-website-service --cluster ARC311 --cli-input-json file://new-website-service.json
+```
 
 > We now have an internal Network Load Balancer with our backend ECS Hosts registered.  This is what our architecture looks like right now.  
 > 	![Create NLB](./images/nlb-create.png)
+> If you curl our new backend service (like we did before), the request will fail. This is because our Cloud9 instance still has no route or any way to access the new ECS service.  We need to create an *Endpoint Service* in VPC1 where our ECS conatiners live and an *Endpoint* in VPC2 where Cloud9 lives.
 
 ### Create Endpoint Service for PrivateLink
 
@@ -137,13 +235,14 @@ Now that we know that the service is functional and can be reached via the publi
 
 2. In the left-hand navigation pane, choose **Endpoint Services**, then  click the **Create Endpoint Service** button.
 
-3. For *Associate Network Load Balancers*, select the `Privatelink-MyInitials` Network Load Balancer you created earlier to associate with the endpoint service.
+3. For *Associate Network Load Balancers*, select the `arc311-nlb` Network Load Balancer you created earlier to associate with the endpoint service.
 
 	![Create Endpoint Service](./images/create-endpoint-service.png)
 
-3. For *Require acceptance for endpoint*, select the check box for **Acceptance Reqired** to accpt requests to your service manually. If you do not select this option, endpoint connections are automatically accepted.
+3. For *Require acceptance for endpoint*, select the check box for **Acceptance Reqired** to accept requests to your service manually. 
+	>If you do not select this option, endpoint connections are automatically accepted.
 
-4. Click **Create Service**.  You should get a success message like the one below.  Notice that you will be allocaed a DNS name for the *Endpoint Service*.  Once finsihed, click **Close**.
+4. Click **Create Service**.  You should get a success message like the one below.  Notice that you will be allocated a DNS name for the *Endpoint Service*.  Once finsihed, click **Close**.
 
 	![Create Endpoint Service](./images/create-endpoint-service-sucess.png)
 
@@ -153,7 +252,7 @@ Now that we know that the service is functional and can be reached via the publi
 
 20. In the lower pane, click on the **Whitelisted Principals** tab.  
 	* Next, Choose **Add principals to whitelist**.  
-	* Specify `*` in the ARN to add permissions for all principals. 
+	* Specify `*` in the ARN filed to add permissions for all principals. 
 	* Click **Add to Whitelisted principals**
 	
 > NOTE:  This is not following the least privilage security model and we are only doing this for the purpose of this lab.  We suggest you whitelist the appropriate accounts, IAM roles and users.  You can add multiple principals at the step too.
@@ -168,12 +267,12 @@ At this point, we have our service behind a NLB and configured as an *Endpoint S
 
 1.  Let's create an interface endpoint in VPC2 so that our *Cloud9* instance, or any other service we might spin up in VPC2 can communicate to our service in VPC1.
 
-2. From the VPC Console, under Endpoint Services, make sure your Endpoint Service is selected.  	
+2. From the *VPC Console*, under **Endpoint Services**, make sure your Endpoint Service is selected.  	
 	* You will need to copy the **Service Name** which should look similar to: `com.amazonaws.vpce.us-east-2.vpce-svc-0e6f539a5f123456a`
 
 	![Create Endpoint Service](./images/service-name.png)
 
-3. From the VPC console, choose **Endpoints** (**NOTE** this is different than *Endpoint Service*), then click the **Create Endpoint** button.
+3. From the *VPC console*, choose **Endpoints** (**NOTE** this is different than *Endpoint Service*), then click the **Create Endpoint** button.
 	* For *Service category*, choose **Find service by name**.
 	* For *Service Name*, paste the name of the service you copied earlier(Example: `com.amazonaws.vpce.us-east-2.vpce-svc-0e6f539a5f123456a`) and click **Verify**.
 

@@ -268,7 +268,7 @@ At this point, we have our service behind a NLB and configured as an *Endpoint S
 1.  Let's create an interface endpoint in VPC2 so that our *Cloud9* instance, or any other service we might spin up in VPC2 can communicate to our service in VPC1.
 
 2. From the *VPC Console*, under **Endpoint Services**, make sure your Endpoint Service is selected.  	
-	* You will need to copy the **Service Name** which should look similar to: `com.amazonaws.vpce.us-east-2.vpce-svc-0e6f539a5f123456a`
+	* You will need to copy the **Service Name** from the *Details* tab, which should look similar to: `com.amazonaws.vpce.us-east-2.vpce-svc-0e6f539a5f123456a`
 
 	![Create Endpoint Service](./images/service-name.png)
 
@@ -280,7 +280,7 @@ At this point, we have our service behind a NLB and configured as an *Endpoint S
 
 4. In the bottom section of *Create Endpoint*:
 	* For *VPC*, select **VPC2** from the dropdown.  This is where our Cloud9 instance is located.
-	* For *Subnets*, select the subnets (Availability Zones) in which to create the endpoint network interfaces.  You can sleect the public subnets for VPC 2 (1 in each AZ)
+	* For *Subnets*, select the subnets (Availability Zones) in which to create the endpoint network interfaces.  You can select the public subnets for VPC 2 (1 in each AZ)
 	* For *Security group*, select the **VPC2** security group to associate with the endpoint network interfaces.  This will allow all traffic with a source of 10.200.0.0/16
 
 5.  Click **Create Endpoint**.
@@ -296,8 +296,11 @@ At this point, we have our service behind a NLB and configured as an *Endpoint S
 
 8. Select the *endpoint*, choose the **Actions** drop down, and click **Accept Endpoint Connection Request**.  
 
-34. Copy the DNS name from your endpoint.  It should be similar to 
+34. Click back to *Endpoints* and select your new endpoint. Copy the *FIRST* DNS name on the details tab from your endpoint.  It should be similar to:
+
+	`vpce-0f14daf3354145ee2-1kx05bsg.vpce-svc-0545a2b2f1afbd610.us-east-1.vpce.amazonaws.com`
+	> The bottom 2 endpoints are zonal endpoints.  You will notice that they specify specific AZs in the DNS name (ex. us-east-1a).
 
 35. Now we can test our service again!  From the Cloud9 IDE, open that URL in a new browser tab to load your IDE environment.  We will use curl against the DNS name of our endpoint service.
 
-curl myprivateapp
+`curl -vo /dev/null vpce-0f14daf3354145ee2-1kx05bsg.vpce-svc-0545a2b2f1afbd610.us-east-1.vpce.amazonaws.com`

@@ -225,16 +225,16 @@ We now have a Network load balancer, but now we need to create a website and pro
 8. At the top of the browser, click **File** then click **Save As** and name the file `new-website-service.json`.
 9. Click **Save**.
 
-10.  From the terminal, we will create the new ECS services for the Website Service and the Product Service.  Run the following to create the Product Service referencing the JSON we just saved.
+10.  From the terminal, we will create the new ECS services for the *Website Service* and the *Product Service*.  Run the following to create the **Product Service** referencing the JSON we just saved.
 
-```
-aws ecs create-service --service-name new-product-service --cluster ARC311 --cli-input-json file://new-product-service.json
-```
-11. Next, run the following to create the Website Service.
+	```
+	aws ecs create-service --service-name new-product-service --cluster ARC311 --cli-input-json file://new-product-service.json
+	```
+11. Next, run the following to create the **Website Service**.
 
-```
-aws ecs create-service --service-name new-website-service --cluster ARC311 --cli-input-json file://new-website-service.json
-```
+	```
+	aws ecs create-service --service-name new-website-service --cluster ARC311 --cli-input-json file://new-website-service.json
+	```
 
 > We now have an internal Network Load Balancer with our backend ECS Hosts registered.  This is what our architecture looks like right now.  
 > 	![Create NLB](../images/nlb-create.png)
@@ -292,7 +292,7 @@ At this point, we have our service behind a NLB and configured as an *Endpoint S
 4. In the bottom section of *Create Endpoint*:
 	* For *VPC*, select **VPC2** from the dropdown.  This is where our Cloud9 instance is located.
 	* For *Subnets*, select the subnets (Availability Zones) in which to create the endpoint network interfaces.  You can select the public subnets for VPC 2 (1 in each AZ)
-	* For *Security group*, select the **VPC2** security group to associate with the endpoint network interfaces.  This will allow all traffic with a source of 10.200.0.0/16
+	* For *Security group*, select the **VPC2** security group.  This will allow all traffic with a source of 10.200.0.0/16
 
 5.  Click **Create Endpoint**.
 
@@ -301,26 +301,28 @@ At this point, we have our service behind a NLB and configured as an *Endpoint S
 	> We have specified that acceptance is required for connection requests, therefore you must make a API call or use the console to accept or reject interface endpoint connection requests to your endpoint service. After an interface endpoint is accepted, it becomes available.
 
 
-6. In the left-hand navigation pane, choose **Endpoint Services** and select the **Endpoint Service** that we created earlier.
+6. Now we need to accept the endpoint.  In the left-hand navigation pane, choose **Endpoint Services** and select the **Endpoint Service** that we created earlier.
 
 7. In the lower pane, click the **Endpoint Connections** tab. This tab lists endpoint connections that are currently pending your approval. 
 
-8. Select the *endpoint*, choose the **Actions** drop down, and click **Accept Endpoint Connection Request**.  
+8. Select the *Endpoint*, choose the **Actions** drop down, and click **Accept Endpoint Connection Request**.  
 
 9. Click back to *Endpoints* and select your new endpoint. Copy the *FIRST* DNS name on the details tab from your endpoint.  It should be similar to:
 
 	`vpce-0f14daf3354145ee2-1kx05bsg.vpce-svc-0545a2b2f1afbd610.us-east-1.vpce.amazonaws.com`
 	> The bottom 2 endpoints are zonal endpoints.  You will notice that they specify specific AZs in the DNS name (ex. us-east-1a).
 
-10.  First, let's resolve DNS for our **VPC Endpoint**. Run the following in you *Cloud9 Terminal*.  *Be sure to replace with your VPC endpoint DNS name!*
+10.  First, let's resolve DNS for our **VPC Endpoint**. Run the following in you *Cloud9 Terminal*.  *Be sure to replace the DNS name with YOUR VPC endpoint DNS name!*
 
-	`dig +short vpce-0f14daf3354145ee2-1kx05bsg.vpce-svc-0545a2b2f1afbd610.us-east-1.vpce.amazonaws.com`
+	`
+	dig +short REPLACE-ME-vpce-0f14daf3354145ee2-1kx05bsg.vpce-svc-0545a2b2f1afbd610.us-east-1.vpce.amazonaws.com
+	`
 	
-11.  2 Addresses should be returned.  You can also try this with the bottom 2 zonal DNS names.
+11.  Two addresses should be returned.  You can also try this with the bottom 2 zonal DNS names that you saw in our console.
 
 10. Now we can test our service again!  From the Cloud9 IDE, open that URL in a new browser tab to load your IDE environment.  We will use curl against the DNS name of our endpoint service.
 
-	`curl -vo /dev/null vpce-0f14daf3354145ee2-1kx05bsg.vpce-svc-0545a2b2f1afbd610.us-east-1.vpce.amazonaws.com`
+	`curl -vo /dev/null REPLACE-ME-vpce-0f14daf3354145ee2-1kx05bsg.vpce-svc-0545a2b2f1afbd610.us-east-1.vpce.amazonaws.com`
 	
 **Our architecture now looks like this:**
 

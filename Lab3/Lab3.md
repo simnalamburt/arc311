@@ -70,4 +70,14 @@ While we can set up peering within the same region, it makes more sense for us t
 	![VPC Console](../images/public-route-table.png)
 
 11. Click **Edit Routes**.  In the *Edit Routes* page, click **Add Route**
+12. Type `10.200.0.0/16` for the *Destination*.
+13. Click the **Target** drop down and select **Peering Connection**
+
+	![VPC Console](../images/edit-routes.png)
+	
+14. Select the **Peering Connection ID** you just created.
+15. Click **Save Routes**
+16. Now, perform the same steps to add these routes to your Route tables with **Private** in the name.  **Example:**  `VPC4 Private Routes AZ1` and `VPC4 Private Routes AZ2`.
+17. Once complete, *change regions* in the top right-hand corner back to your primary region.  You will need to update your **Route Tables** for VPC2.
+18. Follow the same steps from before, to update your VPC2 Route tables.  This time, the Destination will be `10.4.0.0/16`
 

@@ -187,7 +187,7 @@ We now have a Network load balancer, but now we need to create a website and pro
 
 
 	```
-{
+	{
 	    "serviceName": "new-product-service",
 	    "taskDefinition": "product-service",
 	    "loadBalancers": [
@@ -198,8 +198,8 @@ We now have a Network load balancer, but now we need to create a website and pro
 	        }
 	    ],
 	    "desiredCount": 2
-}
-
+	}
+	
 	```
 5. At the top of the browser, click **File** then click **Save As** and name the file `new-product-service.json`.
 6. Click **Save**.

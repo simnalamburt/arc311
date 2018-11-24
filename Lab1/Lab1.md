@@ -1,8 +1,14 @@
 # Lab 1:
 
-In this lab, you will launch a CloudFormation stack that will create Amazon Virtual Private Cloud (VPC)s environment, an application running in ECS and a Cloud9 IDE Instance that you will use in the rest of the workshop.
+In this lab, you will launch a CloudFormation stack that will create 2 Amazon Virtual Private Cloud (VPC)s environment, an application running in ECS and a Cloud9 IDE Instance that you will use in the rest of the workshop.  
 
-Cloud9 is only used in this case to avoid requiring participants from having to install the AWS CLI or use tools like curl directly from their laptop.
+Below is a diagram of what the architecture will look like once Cloudformation has finished deploying all the resources.  We will build on top of this architecture.
+
+![Cloudformation Console](../images/cloudformation1.png)
+
+*Cloud9* is only used in this case to avoid requiring participants from having to install the AWS CLI or use tools like curl directly from their laptop.
+
+
 
 ## Step-by-step Instructions
 
@@ -16,9 +22,9 @@ You can launch this CloudFormation stack in your account by *right-clicking* on 
 
 Region| Launch
 ------|-----
-| US East (Ohio) - (us-east-2) | [![cloudformation-launch-button](images/cloudformation-launch-stack.png)](https://console.aws.amazon.com/cloudformation/home?region=us-east-2#/stacks/new?stackName=ARC311&templateURL=https://s3-us-west-2.amazonaws.com/arc311-region1-cloudformation/master.yaml) |
-| US East (N. Virginia) - (us-east-1) | [![cloudformation-launch-button](images/cloudformation-launch-stack.png)](https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=ARC311&templateURL=https://s3-us-west-2.amazonaws.com/arc311-region1-cloudformation/master.yaml) |
-| US West (Oregon) - (us-west-2) | [![cloudformation-launch-button](images/cloudformation-launch-stack.png)](https://console.aws.amazon.com/cloudformation/home?region=us-west-2#/stacks/new?stackName=ARC311&templateURL=https://s3-us-west-2.amazonaws.com/arc311-region1-cloudformation/master.yaml) |
+| US East (Ohio) - (us-east-2) | [![cloudformation-launch-button](../images/cloudformation-launch-stack.png)](https://console.aws.amazon.com/cloudformation/home?region=us-east-2#/stacks/new?stackName=ARC311&templateURL=https://s3-us-west-2.amazonaws.com/arc311-region1-cloudformation/master.yaml) |
+| US East (N. Virginia) - (us-east-1) | [![cloudformation-launch-button](../images/cloudformation-launch-stack.png)](https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=ARC311&templateURL=https://s3-us-west-2.amazonaws.com/arc311-region1-cloudformation/master.yaml) |
+| US West (Oregon) - (us-west-2) | [![cloudformation-launch-button](../images/cloudformation-launch-stack.png)](https://console.aws.amazon.com/cloudformation/home?region=us-west-2#/stacks/new?stackName=ARC311&templateURL=https://s3-us-west-2.amazonaws.com/arc311-region1-cloudformation/master.yaml) |
 
 
 3. On the next screen, Step 2, leave the *Stack Name* at the default of **ARC311** and click **Next**.
@@ -29,33 +35,33 @@ It will take a approximitely 10 minutes for the Stack to create. Wait until the 
 > This CloudFormation template will launch multiple child stacks.  Once complete, you will have 2 VPCs with subnets, NAT Gateways, security groups, etc.  Additonally, it will launch a Cloud9 instance, an Elastic Container Service (ECS) cluster, an Application Load Balancer, and 2 services that will run in the ECS cluster (Website service and product service)
 
 ### Configuring VPC Flow Logs
-Some of our traffic will be using public IP addresses and then we will make our application private.  VPC flow logs will help us confirm that we are successful in doing so.  We will write the *VPC flow logs* to *S3* and later use *Athena* to query them.  You can learn more about VPC flow logs and the record syntax here in the [VPC Flow Flogs Documentation.](https://docs.aws.amazon.com/vpc/latest/userguide/flow-logs.html)
+Some of our traffic will be using public IP addresses and then we will make our application private.  VPC flow logs will help us identify what tarffic is allowed and denied.  We will write the *VPC flow logs* to *S3* and later use *Athena* to query them in an optional lab.  You can learn more about VPC flow logs and the record syntax here in the [VPC Flow Flogs Documentation.](https://docs.aws.amazon.com/vpc/latest/userguide/flow-logs.html)
 
 7. From the Cloudformation Console, click on your main ARC311 stack (the master stack).  
 
-	![Cloudformation Console](./images/parent-stack.png)
+	![Cloudformation Console](../images/parent-stack.png)
 
 8. When the stack creation is complete, click the **Outputs** tab for the stack and find the S3 bucket ARN. Copy this ARN to your clipboard or notepad.  You will need this in a later step.
 
-	![Cloudformation Console](./images/cloud9-output.png)
+	![Cloudformation Console](../images/s3-output.png)
 
 2.  Open the [*VPC console*](https://console.aws.amazon.com/vpc/) in a *NEW* tab in your browser.  *Look in the top right-had corner and confirm that you are in the same region you launched your template in!*  This will save a lot of back and forth in the management console.  From the right-hand navigation pane, click **Your VPCs**.  You should see 2 VPCs created by Cloudformatin as well as the default VPC.
 
-	![VPC Console](./images/vpc-console1.png)
+	![VPC Console](../images/vpc-console1.png)
 
 2. From the top left-hand side of the VPC console, click in the **Select a VPC** drop down and select VPC1.  This VPC has your application running in it.  This is a containerized application that ECS is managing.  
 
-	![VPC Console](./images/select-vpc1.png)
+	![VPC Console](../images/select-vpc1.png)
 	
 3.  Let's turn on VPC flow logs for these VPCs.  Once the VPC is selected, in the bottom pane, click on the **Flow Logs** tab.
 	
-	![Cloudformation Console](./images/vpc-flow-logs-create.png)
+	![Cloudformation Console](../images/vpc-flow-logs-create.png)
 
 4. Click **Create flow log**.
 
 5. From the *Filter* drop down select **ALL**.  Next, choose the **Send to a S3 bucket** radio buttion.  You can get the bucket name from the **Outputs** tab from the main ARC311 stack.  The arn should look like this: `arn:aws:s3:::arc311-s3bucket-1erbhppavsb0w-loggingbucket-1dfykskj12345`
 
-	![Cloudformation Console](./images/create-flow-log.png)
+	![Cloudformation Console](../images/create-flow-log.png)
 
 6. Click **Create**.
 
@@ -67,19 +73,19 @@ While it may seem odd to use an IDE to use a tool like curl, Cloud9 comes with a
 
 7. From the Cloudformation Console, click on your main ARC311 stack (the master stack).  
 
-	![Cloudformation Console](./images/parent-stack.png)
+	![Cloudformation Console](../images/parent-stack.png)
 
 8. When the stack creation is complete, click the **Outputs** tab for the stack and select the value for **Cloud9 IDE**. Open that URL in a new browser tab to load your IDE environment.
 
-	![Cloudformation Console](./images/cloud9-output.png)
+	![Cloudformation Console](../images/cloud9-output.png)
 
 8. In the lower pane of your **Cloud9 IDE**, you will have a terminal that looks like the below.  
 
-	![CLoudformation Console](./images/cloud9-terminal.png)
+	![CLoudformation Console](../images/cloud9-terminal.png)
 
 9.  Go back to your CloudFormation console so we can get the DNS name of your ALB.  From the CloudFormation **Outputs** tab, copy the dns name for the application and attempt to curl.
 
-	![Cloudformation Console](./images/alb-urls.png)
+	![Cloudformation Console](../images/alb-urls.png)
 10.  From your Cloud9 IDE, paste the command below for the website. Be sure you copy your DNS name for **your load balancer** from the **Outputs** tab. We want to check that we get a `200 OK` as a response.
 
 	```console
@@ -143,23 +149,23 @@ First, we need to create an *Endpoint Service* in *VPC1* for our application.  A
 	* For *Name*, type `NewWebsiteService`
 	* Leave **Instance** select as the *Target Type*
 	
-	![Cloudformation Console](./images/target-group.png)
+	![Cloudformation Console](../images/target-group.png)
 8. In the *Health Checks* section:
 	* Select **TCP** as the protocol from the drop down.
 	* Leave the rest of the health check settings as default
 
-	![Cloudformation Console](./images/health-check.png)
+	![Cloudformation Console](../images/health-check.png)
 
 9. Click **Next:Register Targets**.
 
 10. On the *Step 3: Register Targets* page, click on the *4 ECS Hosts* in the bottom pane and click the **Add to Registered** button.
 
-	![Cloudformation Console](./images/register-instance.png)
+	![Cloudformation Console](../images/register-instance.png)
 
 11. Click **Next: Review** and lastly click **Create** on the *Step 4: Review* page.
 12. We will need the ARN (Amazon Resource Name) for the target group.  From the left hand pane, select **Target Groups**.
 13. Select the **NewWebsiteService** and copy the ARN from the bottom pane.
-	![Cloudformation Console](./images/targetgroup-arn.png)
+	![Cloudformation Console](../images/targetgroup-arn.png)
 
 ### Create ECS Services to Run Behind Network Load Balancer
 We now have a Network load balancer, but now we need to create a website and product service in ECS to register to our NLB.  We will do this configuration via CLI from our Cloud9 instance.
@@ -168,7 +174,7 @@ We now have a Network load balancer, but now we need to create a website and pro
 
 2. In the top pane, next to the *Welcome* tab, click on the `+` icon and choose **New File**.
 	
-	![Cloudformation Console](./images/cloud9-newfile.png)
+	![Cloudformation Console](../images/cloud9-newfile.png)
 
 3.  Paste the arn at the top of the file or open a 2nd **New File** to store the arn temporarily.
 
@@ -179,18 +185,19 @@ We now have a Network load balancer, but now we need to create a website and pro
 
 
 	```console
-	{
-    "serviceName": "new-product-service",
-    "taskDefinition": "product-service",
-    "loadBalancers": [
-        {
-            "targetGroupArn": "arn:aws:elasticloadbalancing:us-east-2:1234567890:targetgroup/NewWebsiteService/5065959d16408f6e",    
-            "containerName": "product-service",
-            "containerPort": 8001
-        }
-    ],
-    "desiredCount": 2
+{
+	    "serviceName": "new-product-service",
+	    "taskDefinition": "product-service",
+	    "loadBalancers": [
+	        {
+	            "targetGroupArn": "arn:aws:elasticloadbalancing:us-east-2:1234567890:targetgroup/NewWebsiteService/5065959d16408f6e",    
+	            "containerName": "product-service",
+	            "containerPort": 8001
+	        }
+	    ],
+	    "desiredCount": 2
 }
+
 	```
 5. At teh top of the browser, click **File** then click **Save As** and name the file `new-product-service.json`.
 6. Click **Save**.
@@ -211,6 +218,7 @@ We now have a Network load balancer, but now we need to create a website and pro
 	    ],
 	    "desiredCount": 2
 	}
+	
 	```
 8. At the top of the browser, click **File** then click **Save As** and name the file `new-website-service.json`.
 9. Click **Save**.
@@ -227,7 +235,7 @@ aws ecs create-service --service-name new-website-service --cluster ARC311 --cli
 ```
 
 > We now have an internal Network Load Balancer with our backend ECS Hosts registered.  This is what our architecture looks like right now.  
-> 	![Create NLB](./images/nlb-create.png)
+> 	![Create NLB](../images/nlb-create.png)
 > If you curl our new backend service (like we did before), the request will fail. This is because our Cloud9 instance still has no route or any way to access the new ECS service.  We need to create an *Endpoint Service* in VPC1 where our ECS conatiners live and an *Endpoint* in VPC2 where Cloud9 lives.
 
 ### Create Endpoint Service for PrivateLink
@@ -238,14 +246,14 @@ aws ecs create-service --service-name new-website-service --cluster ARC311 --cli
 
 3. For *Associate Network Load Balancers*, select the `arc311-nlb` Network Load Balancer you created earlier to associate with the endpoint service.
 
-	![Create Endpoint Service](./images/create-endpoint-service.png)
+	![Create Endpoint Service](../images/create-endpoint-service.png)
 
 3. For *Require acceptance for endpoint*, select the check box for **Acceptance Reqired** to accept requests to your service manually. 
 	>If you do not select this option, endpoint connections are automatically accepted.
 
 4. Click **Create Service**.  You should get a success message like the one below.  Notice that you will be allocated a DNS name for the *Endpoint Service*.  Once finsihed, click **Close**.
 
-	![Create Endpoint Service](./images/create-endpoint-service-sucess.png)
+	![Create Endpoint Service](../images/create-endpoint-service-sucess.png)
 
 5. Now that you have created an *endpoint service*, you can control which service consumers can create an interface endpoint to connect to your service. Service consumers are IAM principals—IAM users, IAM roles, and AWS accounts.
 
@@ -259,25 +267,25 @@ aws ecs create-service --service-name new-website-service --cluster ARC311 --cli
 > NOTE:  This is not following the least privilage security model and we are only doing this for the purpose of this lab.  We suggest you whitelist the appropriate accounts, IAM roles and users.  You can add multiple principals at the step too.
 
 
-![Create Endpoint Service](./images/whitelist.png)
+![Create Endpoint Service](../images/whitelist.png)
 
 ### Create Interface Endpoint for Private Link
 At this point, we have our service behind a NLB and configured as an *Endpoint Service*.  However, we have no consumers of our service yet.  This is what our architecture looks like right now:
 
-![Create Endpoint Service](./images/endpoint-service-diagram.png)
+![Create Endpoint Service](../images/endpoint-service-diagram.png)
 
 1.  Let's create an interface endpoint in VPC2 so that our *Cloud9* instance, or any other service we might spin up in VPC2 can communicate to our service in VPC1.
 
 2. From the *VPC Console*, under **Endpoint Services**, make sure your Endpoint Service is selected.  	
 	* You will need to copy the **Service Name** from the *Details* tab, which should look similar to: `com.amazonaws.vpce.us-east-2.vpce-svc-0e6f539a5f123456a`
 
-	![Create Endpoint Service](./images/service-name.png)
+	![Create Endpoint Service](../images/service-name.png)
 
 3. From the *VPC console*, choose **Endpoints** (**NOTE** this is different than *Endpoint Service*), then click the **Create Endpoint** button.
 	* For *Service category*, choose **Find service by name**.
 	* For *Service Name*, paste the name of the service you copied earlier(Example: `com.amazonaws.vpce.us-east-2.vpce-svc-0e6f539a5f123456a`) and click **Verify**.
 
-	![Create Endpoint Service](./images/create-endpoint1.png)
+	![Create Endpoint Service](../images/create-endpoint1.png)
 
 4. In the bottom section of *Create Endpoint*:
 	* For *VPC*, select **VPC2** from the dropdown.  This is where our Cloud9 instance is located.
@@ -286,9 +294,9 @@ At this point, we have our service behind a NLB and configured as an *Endpoint S
 
 5.  Click **Create Endpoint**.
 
-> Now we need to **accept** the interface endpoint. After you've created an Endpoint Service, service consumers for which you've added permission can create an interface endpoint to connect to your service.
-
-> We have specified that acceptance is required for connection requests, therefore you must make a API call or use the console to accept or reject interface endpoint connection requests to your endpoint service. After an interface endpoint is accepted, it becomes available.
+	> Now we need to **accept** the interface endpoint. After you've created an Endpoint Service, service consumers for which you've added permission can create an interface endpoint to connect to your service.
+	
+	> We have specified that acceptance is required for connection requests, therefore you must make a API call or use the console to accept or reject interface endpoint connection requests to your endpoint service. After an interface endpoint is accepted, it becomes available.
 
 
 6. In the left-hand navigation pane, choose **Endpoint Services** and select the **Endpoint Service** that we created earlier.
@@ -297,11 +305,23 @@ At this point, we have our service behind a NLB and configured as an *Endpoint S
 
 8. Select the *endpoint*, choose the **Actions** drop down, and click **Accept Endpoint Connection Request**.  
 
-34. Click back to *Endpoints* and select your new endpoint. Copy the *FIRST* DNS name on the details tab from your endpoint.  It should be similar to:
+9. Click back to *Endpoints* and select your new endpoint. Copy the *FIRST* DNS name on the details tab from your endpoint.  It should be similar to:
 
 	`vpce-0f14daf3354145ee2-1kx05bsg.vpce-svc-0545a2b2f1afbd610.us-east-1.vpce.amazonaws.com`
 	> The bottom 2 endpoints are zonal endpoints.  You will notice that they specify specific AZs in the DNS name (ex. us-east-1a).
 
-35. Now we can test our service again!  From the Cloud9 IDE, open that URL in a new browser tab to load your IDE environment.  We will use curl against the DNS name of our endpoint service.
+10.  First, let's resolve DNS for our **VPC Endpoint**. Run the following in you *Cloud9 Terminal*.  *Be sure to replace with your VPC endpoint DNS name!*
 
-`curl -vo /dev/null vpce-0f14daf3354145ee2-1kx05bsg.vpce-svc-0545a2b2f1afbd610.us-east-1.vpce.amazonaws.com`
+	`dig +short vpce-0f14daf3354145ee2-1kx05bsg.vpce-svc-0545a2b2f1afbd610.us-east-1.vpce.amazonaws.com`
+	
+11.  2 Addresses should be returned.  You can also try this with the bottom 2 zonal DNS names.
+
+10. Now we can test our service again!  From the Cloud9 IDE, open that URL in a new browser tab to load your IDE environment.  We will use curl against the DNS name of our endpoint service.
+
+	`curl -vo /dev/null vpce-0f14daf3354145ee2-1kx05bsg.vpce-svc-0545a2b2f1afbd610.us-east-1.vpce.amazonaws.com`
+	
+**Our architecture now looks like this:**
+
+![Create Endpoint Service](../images/lab1-end.png)
+
+#### You can now move onto Lab 2

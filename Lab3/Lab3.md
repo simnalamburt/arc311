@@ -12,9 +12,11 @@ Additionally, PrivateLink does not support cross region, therefore if you do hav
 
 #### Create Cross Region Environment
 
-We have VPC 1 and VPC 2 in one region.  **It is time to take this multi-region!**  
+We have VPC 1 and VPC 2 in one region.  **It is time to take this multi-region!**  After you launch the CloudFormation stack below, our architecture will look like this:
 
-2. Let's start by running a *CloudFormation template* to spin up a VPC3 in a *different region* (i.e. if VPC 1 and 2 are in us-west-2, pick us-east-1).  You will follow the same steps from before in the Cloudformation console.  **Make sure you are in a different region!**
+![Cloudformation](../images/crossregion-cloudformation.png)
+
+1. Let's start by running a *CloudFormation template* to spin up a VPC3 in a *different region* (i.e. if VPC 1 and 2 are in us-west-2, pick us-east-1).  You will follow the same steps from before in the Cloudformation console.  **Make sure you are in a different region!**
 
 > This may take a few minutes.  Once complete, finish below.
 
@@ -22,43 +24,50 @@ You can launch this CloudFormation stack in your account:
 
 Region| Launch
 ------|-----
-| US East (Ohio) - us-east-2 | [![cloudformation-launch-button](images/cloudformation-launch-stack.png)](https://console.aws.amazon.com/cloudformation/home?region=us-east-2#/stacks/new?stackName=CrossRegion&templateURL=https://s3.amazonaws.com/arc311-crossregion/master.yaml) |
-| US East (N. Virginia) - us-east-1 | [![cloudformation-launch-button](images/cloudformation-launch-stack.png)](https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=CrossRegion&templateURL=https://s3.amazonaws.com/arc311-crossregion/master.yaml) |
-| US West (Oregon) - us-west-2 | [![cloudformation-launch-button](images/cloudformation-launch-stack.png)](https://console.aws.amazon.com/cloudformation/home?region=us-west-2#/stacks/new?stackName=CrossRegion&templateURL=https://s3.amazonaws.com/arc311-crossregion/master.yaml) |
+| US East (Ohio) - us-east-2 | [![cloudformation-launch-button](../images/cloudformation-launch-stack.png)](https://console.aws.amazon.com/cloudformation/home?region=us-east-2#/stacks/new?stackName=CrossRegion&templateURL=https://s3.amazonaws.com/arc311-crossregion/master.yaml) |
+| US East (N. Virginia) - us-east-1 | [![cloudformation-launch-button](../images/cloudformation-launch-stack.png)](https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=CrossRegion&templateURL=https://s3.amazonaws.com/arc311-crossregion/master.yaml) |
+| US West (Oregon) - us-west-2 | [![cloudformation-launch-button](../images/cloudformation-launch-stack.png)](https://console.aws.amazon.com/cloudformation/home?region=us-west-2#/stacks/new?stackName=CrossRegion&templateURL=https://s3.amazonaws.com/arc311-crossregion/master.yaml) |
 
 2.  This Cloudformation template spun up another VPC with the same containerized applications running in ECS and behind a ALB.  
 
 3.  We need to set up a peering connection between VPC2 and our new VPC in another region.  We can also set up a "mesh" to connect each of the VPCs together.  This way, clients in VPC 1 can route to destinations in VPC2 and VPC3.
 
-#### Inter Region Peering
-
-4.  From the VPC console, select **Peering Connections** on the left hand side. Next, click on **Create Peering Connection**
-
-5.  Give your peering connection a tag like **VPC1 peer to VPC2**
-
-6.  Select VPC1 (10.100.0.0/16) as the VPC requestor.  
-
-7.  Select VPC2 (10.200.0.0/16) as the VPC to peer with.  Click **Create Peering Connection**
-
-8.  The peering connection should be in a status of *Pending Acceptance*.  Click on the **Actions** Drop down and click **Accept Request**.
-
-9. Now we have peering set up!  However, you still need to add a route in your route table.  You can do this by clicking on Route Tables in the left hand pane and altering your route tables for VPC1 and VPC2.
 
 
 ####  Cross Region VPC Peering
 
-10.  From the VPC console, select **Peering Connections** on the left hand side. Next, click on **Create Peering Connection**
+While we can set up peering within the same region, it makes more sense for us to peer cross region with our architecture.
 
-11.  Give your peering connection a tag like **VPC2 peer to VPC3**
+1.  In another tab, open the VPC console for your 2nd region.  Copy the VPC ID for VPC4.
 
-12.  Select VPC2 (10.200.0.0/16) as the VPC requestor.  
+	![VPC Console](../images/vpc-crossregion-console.png)
 
-13.  Select VPC3 (Cross Region) as the VPC to peer with.  
+2. From the *VPC console* in our first region, select **Peering Connections** on the left hand side. Next, click on **Create Peering Connection**
 
-14. Click the *Other Region* radio button, select your other region and the cross region VPC.  Click **Create Peering Connection**
+2.  Give your peering connection a tag of `VPC2-peer-to-VPC4`.
 
-15.  The peering connection should be in a status of *Pending Acceptance*.  Click on the **Actions** Drop down and click **Accept Request**.
+3.  Select VPC2 (10.200.0.0/16) as the VPC requestor.  
 
-16. Now we have peering set up!  However, you still need to add a route in your route table.  You can do this by clicking on Route Tables in the left hand pane and altering your route tables for each of the VPCs.
+4. Click the *Other Region* radio button, select your other region and paste the VPC ID for VPC4 (10.4.0.0/16) as the VPC accepter.
 
+	 ![VPC Console](../images/create-peering-connection.png)
+	 
+5.   Click **Create Peering Connection**
+
+6.  The peering connection should be in a status of *Pending Acceptance*.  **Change regions** in the top right-hand corner to your **2nd region**.
+
+7. From your 2nd region, click on the **Actions** Drop down and click **Accept Request**.
+
+	![VPC Console](../images/accept-request.png)
+
+8. Now we have peering set up!  Make note of your peering connection id.  
+9. You still need to add a route in your route table.  You can do this by clicking on **Route Tables** in the left hand pane. 
+
+9. From the top left-hand side of the screen, click in the **Select a VPC** drop down and select **VPC4**.  This will filter the route tables to *only* VPC4.
+
+10.  In the middle pane, select the **Public Route Table**, then click the **Routes** tab in the bottom pane.
+
+	![VPC Console](../images/public-route-table.png)
+
+11. Click **Edit Routes**.  In the *Edit Routes* page, click **Add Route**
 

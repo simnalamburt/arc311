@@ -1,6 +1,6 @@
 # Lab 1:
 
-In this lab, you will launch a CloudFormation stack that will create 2 Amazon Virtual Private Cloud (VPC)s environment, an application running in ECS and a Cloud9 IDE Instance that you will use in the rest of the workshop.  
+In this lab, you will launch a CloudFormation stack that will create two Amazon Virtual Private Clouds (VPCs), an application running in ECS and a Cloud9 IDE Instance that you will use in the rest of the workshop.  
 
 Below is a diagram of what the architecture will look like once Cloudformation has finished deploying all the resources.  We will build on top of this architecture.
 
@@ -14,10 +14,8 @@ Below is a diagram of what the architecture will look like once Cloudformation h
 
 ### Setting Up the Environment
 
-1. Go the AWS Management Console, click **Services** then select **CloudFormation** under Management Tools.  Additionally, you can simply type `CloudFormation` in the search box.
-
-2. First, we need to launch the CloudFormaton Template to create our environment.
-You can launch this CloudFormation stack in your account by *right-clicking* on the **Launch Stack** button and opening in a new browser tab. In the new tab, click **Next**.
+1. First, we need to launch the CloudFormaton Template to create our environment.
+You can launch this CloudFormation stack in your account by *right-clicking* on the **Launch Stack** button and *opening in a new browser tab*. In the new tab, click **Next**.
 
 
 Region| Launch
@@ -30,22 +28,22 @@ Region| Launch
 3. On the next screen, Step 2, leave the *Stack Name* at the default of **ARC311** and click **Next**.
 > Note:  If you are sharing accounts, and someone has this stack name, this stack will fail.  We suggest you do not share accounts, but if you have no other alternative, make sure you launch in  different regions.
 
-4. On the Configure Stack Options page, accept all the defaults and click **Next**. Finally, on the Review page, check the **IAM Resource Acknowledgement** box and click **Create Stack**.
-It will take a approximitely 10 minutes for the Stack to create. Wait until the stack is fully launched and shows a Status of CREATE_COMPLETE.
-> This CloudFormation template will launch multiple child stacks.  Once complete, you will have 2 VPCs with subnets, NAT Gateways, security groups, etc.  Additonally, it will launch a Cloud9 instance, an Elastic Container Service (ECS) cluster, an Application Load Balancer, and 2 services that will run in the ECS cluster (Website service and product service)
+4. On the Configure Stack Options page, accept all the defaults and click **Next**. Finally, on the Review page, check all the **Acknowledgement** boxes and click **Create Stack**.
+It will take a approximitely 10 minutes for the Stack to create. Wait until the `ARC311` stack is fully launched and shows a Status of `CREATE_COMPLETE`.
+> This CloudFormation template will launch **multiple child stacks**.  Once complete, you will have 2 VPCs with subnets, NAT Gateways, security groups, etc.  Additonally, it will launch a Cloud9 instance, an Elastic Container Service (ECS) cluster, an Application Load Balancer, and 2 services that will run in the ECS cluster (Website service and Product service).
 
 ### Configuring VPC Flow Logs
 Some of our traffic will be using public IP addresses and then we will make our application private.  VPC flow logs will help us identify what tarffic is allowed and denied.  We will write the *VPC flow logs* to *S3* and later use *Athena* to query them in an optional lab.  You can learn more about VPC flow logs and the record syntax here in the [VPC Flow Flogs Documentation.](https://docs.aws.amazon.com/vpc/latest/userguide/flow-logs.html)
 
-7. From the Cloudformation Console, click on your main ARC311 stack (the master stack).  
+7. From the Cloudformation Console, select your main ARC311 stack (the master stack).  
 
 	![Cloudformation Console](../images/parent-stack.png)
 
-8. When the stack creation is complete, click the **Outputs** tab for the stack and find the S3 bucket ARN. Copy this ARN to your clipboard or notepad.  You will need this in a later step.
+8. When the stack creation is complete, click the **Outputs** tab for the stack and find the S3 bucket ARN ([Amazon Resource Name](https://docs.aws.amazon.com/general/latest/gr/aws-arns-and-namespaces.html)). Copy this ARN to your clipboard or notepad.  You will need this in a later step.
 
 	![Cloudformation Console](../images/s3-output.png)
 
-2.  Open the [*VPC console*](https://console.aws.amazon.com/vpc/) in a *NEW* tab in your browser.  *Look in the top right-had corner and confirm that you are in the same region you launched your template in!*  This will save a lot of back and forth in the management console.  From the right-hand navigation pane, click **Your VPCs**.  You should see 2 VPCs created by Cloudformatin as well as the default VPC.
+2.  Open the [*VPC console*](https://console.aws.amazon.com/vpc/) in a *NEW* tab in your browser.  *Look in the top right-had corner and confirm that you are in the same region you launched your template in!*  This will save a lot of back and forth in the management console.  From the right-hand navigation pane, click **Your VPCs**.  You should see 2 VPCs created by Cloudformation as well as the default VPC.
 
 	![VPC Console](../images/vpc-console1.png)
 
@@ -69,27 +67,28 @@ Some of our traffic will be using public IP addresses and then we will make our 
 
 ### Testing the application using Cloud9 IDE
 
-While it may seem odd to use an IDE to use a tool like curl, Cloud9 comes with a terminal, so you can run commands in your VPC from your browser.  Your Cloud9 instance is running in VPC2.  The only way to access your application is via the Application Load balancer that sits in the public subnets in VPC1.  The application is in the provate subnets in VPC1.
+While it may seem odd to use an IDE to use a tool like curl, Cloud9 comes with a terminal so you can run commands in your VPC from your browser.  Your Cloud9 instance is running in VPC2.  The only way to access your application is via the Application Load balancer that sits in the public subnets in VPC1.  The application is in the private subnets in VPC1.
 
-7. From the Cloudformation Console, click on your main ARC311 stack (the master stack).  
+1. From the Cloudformation Console, click on your main ARC311 stack (the master stack).  
 
 	![Cloudformation Console](../images/parent-stack.png)
 
-8. When the stack creation is complete, click the **Outputs** tab for the stack and select the value for **Cloud9 IDE**. Open that URL in a new browser tab to load your IDE environment.
+2. Click the **Outputs** tab for the stack and select the value for **Cloud9 IDE**. Open that URL in a new browser tab to load your IDE environment.
 
 	![Cloudformation Console](../images/cloud9-output.png)
 
-8. In the lower pane of your **Cloud9 IDE**, you will have a terminal that looks like the below.  
+3. In the lower pane of your **Cloud9 IDE**, you will have a terminal in the lower pane of your Cloud9 IDE.  
 
 	![CLoudformation Console](../images/cloud9-terminal.png)
 
-9.  Go back to your CloudFormation console so we can get the DNS name of your ALB.  From the CloudFormation **Outputs** tab, copy the dns name for the application and attempt to curl.
+4.  Go back to your CloudFormation console so we can get the **DNS name of your Application Load Balancer (ALB)**.  From the CloudFormation **Outputs** tab, copy the DNS name for the `WebsiteServiceURL`.
 
 	![Cloudformation Console](../images/alb-urls.png)
-10.  From your Cloud9 IDE, paste the command below for the website. Be sure you copy your DNS name for **your load balancer** from the **Outputs** tab. We want to check that we get a `200 OK` as a response.
+	
+5.  From your Cloud9 IDE, paste the command below for the website. Be sure you copy your DNS name for **your load balancer** from the **Outputs** tab. We want to check that we get a `200 OK` as a response.
 
 	```console
-	curl -vo /dev/null  MYSTACKNAME.MYREGION.elb.amazonaws.com/
+	curl -vo /dev/null  REPLACEME-MYSTACKNAME.MYREGION.elb.amazonaws.com/
 	```
 	> You should get a response like:
 	
@@ -118,17 +117,17 @@ While it may seem odd to use an IDE to use a tool like curl, Cloud9 comes with a
 11. From your Cloud9 IDE, paste DNS name for the product service.  You should see a JSON response directly from the Product Service of our application.
 
 	```
-	curl MYSTACKNAME.MYREGION.elb.amazonaws.com/products
+	curl REPLACEME-MYSTACKNAME.MYREGION.elb.amazonaws.com/products
 	```
 
-> We just accessed out service that lives in a private subnet in a different VPC via a Application Load Balancer in a public subnet.  We can continue to build services that have a public endpoint, or we can make the service private.
+> We just accessed our service that lives in a private subnet in a different VPC via an Application Load Balancer in a public subnet.  We can continue to build services that have a public endpoint, or we can make the service private.  
 
 ### Create NLB for PrivateLink
-Now that we know that the service is functional and can be reached via the public internet.  There are many reasons why you may not want your service to be accessible to the public internet, so let's set up *Private link* so that our Cloud9 instance or perhaps another microservice in our VPC2 can connect. 
+Now that we know that the service is functional and can be reached via the public internet.  There are many reasons why you may not want your service to be accessible to the public internet, so let's set up *Private link* so that our Cloud9 instance or another microservice in VPC2 can connect. 
 
-First, we need to create an *Endpoint Service* in *VPC1* for our application.  An *Endpoint Service* is application in your VPC that you configure as an AWS PrivateLink service.
+First, we need to create an *Endpoint Service* in **VPC1** for our application.  An *Endpoint Service* is application in your VPC that you configure as an **AWS PrivateLink service**.
 
-1.  Open the **EC2 console** at https://console.aws.amazon.com/ec2/.  Verify you are in the **Correct Region!**
+1.  Open the [**EC2 console**](https://console.aws.amazon.com/ec2/) in a new tab or a new window.  Verify you are in the **Correct Region!**
 
 2. From the left hand pane, choose **Load Balancers**.
 
@@ -140,7 +139,7 @@ First, we need to create an *Endpoint Service* in *VPC1* for our application.  A
 	* Give your load balancer a name like `arc311-nlb`.  
 	* Select the **internal** radio button for *Scheme*
 	* Leave the listeners as default
-	* Select **VPC1** as the VPC and click the boxes for each Availability zone to select the Private subnets for each zone.  
+	* Select **VPC1** as the VPC and click the boxes for BOTH Availability Zones, then select the Private subnets for each zone.  
 	
 6. Click **Next: Configure Routing**.  
 
@@ -162,9 +161,12 @@ First, we need to create an *Endpoint Service* in *VPC1* for our application.  A
 
 	![Cloudformation Console](../images/register-instance.png)
 
-11. Click **Next: Review** and lastly click **Create** on the *Step 4: Review* page.
+11. Click **Next: Review** and lastly click **Create** on the *Step 4: Review* page, and lastly, click **Close** on the confirmation.
+
 12. We will need the ARN (Amazon Resource Name) for the target group.  From the left hand pane, select **Target Groups**.
+
 13. Select the **NewWebsiteService** and copy the ARN from the bottom pane.
+
 	![Cloudformation Console](../images/targetgroup-arn.png)
 
 ### Create ECS Services to Run Behind Network Load Balancer
@@ -176,7 +178,7 @@ We now have a Network load balancer, but now we need to create a website and pro
 	
 	![Cloudformation Console](../images/cloud9-newfile.png)
 
-3.  Paste the arn at the top of the file or open a 2nd **New File** to store the arn temporarily.
+3.  Open a 2nd **New File** to store the ARN temporarily.
 
 4.  Within a **New File** in Cloud9 paste the following JSON.
 
@@ -184,7 +186,7 @@ We now have a Network load balancer, but now we need to create a website and pro
 	**IMPORTANT: Update the `targetGroupArn` with the ARN you just pasted in another tab.**
 
 
-	```console
+	```
 {
 	    "serviceName": "new-product-service",
 	    "taskDefinition": "product-service",
@@ -199,7 +201,7 @@ We now have a Network load balancer, but now we need to create a website and pro
 }
 
 	```
-5. At teh top of the browser, click **File** then click **Save As** and name the file `new-product-service.json`.
+5. At the top of the browser, click **File** then click **Save As** and name the file `new-product-service.json`.
 6. Click **Save**.
 7. Now let's create the JSON configuration for the *Website Service*.  Open a **New File Tab** in Cloud9.  Paste in the following JSON.
 

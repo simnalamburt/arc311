@@ -74,4 +74,4 @@ In additon routing traffic to S3 and DynamoDB via private IPs, Gateway endpoints
 }
 ```
 
-#### You can now move onto Lab 3
+#### You can now move onto [Lab 3](https://github.com/vaderlia/arc311/tree/master/Lab3)

@@ -80,7 +80,7 @@ If you recall, we enabled VPC flow logs in Lab 1.  We can now query these logs u
 
 #### You have now completed all the modules in this workshop!  Thank you! 
 
-####Clean-up
+##Clean-up
 In this lab, we built quite a few resources on top of our CloudFormation stacks that we need to delete first.  Make sure you perform the following in order!
 
 1.  First, you need to empty your ***S3 Bucket***
@@ -91,7 +91,7 @@ In this lab, we built quite a few resources on top of our CloudFormation stacks 
 3.  In the primary region (ARC311 stack is deployed here), delete your peering connection.
 4. In the same region, delete the ***Endpoints***, both the *Interface* and the *Gateway* endpoints.
 5. In the same region. delete the ***Endpoint Service***.
-6. In the ECS console, select the ARC311 cluster, select the `new-website-service` and delete.  Do the same for the `new-product-service`.
-7. From the EC2 console, delete the Network Load Balancer you created earlier.
+6. In the ***ECS console***, select the ARC311 cluster, select the `new-website-service` and delete.  Do the same for the `new-product-service`.
+7. From the ***EC2 console***, delete the Network Load Balancer you created earlier.
 8. From the ***CloudFormation*** console, select the parent **ARC311** stack and choose delete.
 9. Switch regions to the **Cross Region** and delete the CrossRegion Cloudformation stack.

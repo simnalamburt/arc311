@@ -126,5 +126,11 @@ We want to configure our peering connection DNS settings so that queries from th
 curl REPLACE-ME-vpce-0f14daf3354145ee2-1kx05bsg.vpce-svc-0545a2b2f1afbd610.us-east-1.vpce.amazonaws.com/products
 `
 > You have now created a multi-region architecture utilizing both PrivateLink and VPC Peering!
+> 
+> In the scenario you just built, the consumer initiating the call to the other region.  It is possible congifure PrivateLink for a NLB in the same region, but use a target group that specifies IPs in another region over a peering connection.  The architecture looks like this:
+> ![VPC Console](../images/crossregionpeer-plink-diagram.png)
+
+
+#### You can now move onto [Lab 4](https://github.com/vaderlia/arc311/tree/master/Lab4) to begin analyzing your VPC traffic.
 
 

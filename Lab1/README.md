@@ -328,4 +328,4 @@ At this point, we have our service behind a NLB and configured as an *Endpoint S
 
 ![Create Endpoint Service](../images/lab1-end.png)
 
-#### You can now move onto Lab 2
+#### You can now move onto [Lab 2](https://github.com/vaderlia/arc311/tree/master/Lab2)

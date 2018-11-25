@@ -1,8 +1,10 @@
-#Lab 2:  Using VPC Gateway Endpoints
+# Lab 2:  Using VPC Gateway Endpoints
 
 As we discussed in the lecture, there are *interface endpoints* and *gateway VPC endpoints*.  Both endpoints allow you to connect to services using private IP ranges, but the Gateway Endpoints are actually specified in your route table instead of creating an Elastic Network Interface (ENI) in your VPC.  We support **S3** and **DynamoDB** Gateway Endpoints.
 
 In additon routing traffic to S3 and DynamoDB via private IPs, Gateway endpoints also prevent the traffic from going through your NAT Gateway or Internet Gateway.  *There are no data processing or hourly charges for using Gateway VPC endpoints*, so these endpoints should be considered for any architecture as a part of your cost optimization.
+
+![S3 Endpoint](../images/s3-endpoint-diagram.png)
 
 #### Let's configure a Gateway Endpoint for S3 
 

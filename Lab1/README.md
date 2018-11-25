@@ -155,8 +155,6 @@ First, we need to create an *Endpoint Service* in **VPC1** for our application. 
 	* Select **TCP** as the protocol from the drop down.
 	* Leave the rest of the health check settings as default
 
-	![Cloudformation Console](../images/health-check.png)
-
 9. Click **Next:Register Targets**.
 
 10. On the *Step 3: Register Targets* page, click on the *4 ECS Hosts* in the bottom pane and click the **Add to Registered** button.

@@ -2,7 +2,7 @@
 
 As we discussed in the lecture, there are *interface endpoints* and *gateway VPC endpoints*.  Both endpoints allow you to connect to services using private IP ranges, but the Gateway Endpoints are actually specified in your route table instead of creating an Elastic Network Interface (ENI) in your VPC.  We support **S3** and **DynamoDB** Gateway Endpoints.
 
-In additon routing traffic to S3 and DynamoDB via private IPs, Gateway endpoints also prevent the traffic from going through your NAT Gateway or Internet Gateway.  *There are no data processing or hourly charges for using Gateway VPC endpoints*, so these endpoints should be considered for any architecture as a part of your cost optimization.
+In additon to routing traffic to S3 and DynamoDB via private IPs, Gateway endpoints also prevent the traffic from going through your NAT Gateway or Internet Gateway.  *There are no data processing or hourly charges for using Gateway VPC endpoints*, so these endpoints should be considered for any architecture as a part of your cost optimization.
 
 ![S3 Endpoint](../images/s3-endpoint-diagram.png)
 
@@ -35,7 +35,7 @@ In additon routing traffic to S3 and DynamoDB via private IPs, Gateway endpoints
 	```
 	aws ec2 describe-prefix-lists
 	```
-3. Now let's make a couple API calls to S3.  We have a bucket that we are writing our VPC flow logs to.  We can do a list on that bucket.  Find the bucket name in the **CloudFormation** console in another tab.  Under the parent **ARC311** stack **Output** tab.
+3. Now let's make a couple of API calls to S3.  We have a bucket that we are writing our VPC flow logs to.  We can do a list on that bucket.  Find the bucket name in the **CloudFormation** console in another tab.  Under the parent **ARC311** stack **Output** tab.
 4. Run the following command, **replacing your bucket name**:
 
 	```

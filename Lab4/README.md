@@ -10,7 +10,7 @@ If you recall, we enabled VPC flow logs in Lab 1.  We can now query these logs u
 	`CREATE DATABASE awslogs;`
 4. Click **Run Query**.
 5. From the left-hand pane, click the **Database** drop down and select your new `awslogs` database.
-6. Click the `+` tab to open a new query and paste the following in to the New Query.  You will need to update the location on **Line 20** with your **S3 Bucket** and path.  If you are unsure of the account ID and region code, you can browse to the S3 console, click on your bucket and follow to path.  
+6. Click the `+` tab to open a new query and paste the following in to the New Query.  You will need to update the location on **Line 20** with your **S3 Bucket Path**.  If you are unsure of the account ID and region code, you can browse to the S3 console, click on your bucket and follow to path.  
 
 	```sql
 	CREATE EXTERNAL TABLE IF NOT EXISTS vpc_flow_logs (
@@ -37,7 +37,7 @@ If you recall, we enabled VPC flow logs in Lab 1.  We can now query these logs u
 	
 	```
 
-7.  Now that the table is created, let's create the partiitons.  Click the `+` to open a new query tab.  Paste in the following and update`YY/MM/dd` with the proper dates (ex. `2018-11-26`)
+7.  Now that the table is created, let's create the partitions.  Click the `+` to open a new query tab.  Paste in the following and update`YY/MM/dd` with the proper dates (ex. `2018-11-26`).  ***Be sure you update the dates and your S3 path.****
 
 
 	```sql

@@ -40,7 +40,7 @@ While we can set up peering within the same region, it makes more sense for us t
 
 	![VPC Console](../images/vpc-crossregion-console.png)
 
-2. From the *VPC console* in our first region, select **Peering Connections** on the left hand side. Next, click on **Create Peering Connection**
+2. From the *VPC console* in our first region, select **Peering Connections** on the left-hand side. Next, click on **Create Peering Connection**.
 
 2.  Give your peering connection a tag of `VPC2-peer-to-VPC4`.
 
@@ -50,7 +50,7 @@ While we can set up peering within the same region, it makes more sense for us t
 
 	 ![VPC Console](../images/create-peering-connection.png)
 	 
-5.   Click **Create Peering Connection** and then close the **Confirmation Message**
+5.   Click **Create Peering Connection** and then close the **Confirmation Message**.
 
 #### Accept Peering Request
 
@@ -60,7 +60,7 @@ While we can set up peering within the same region, it makes more sense for us t
 
 	![VPC Console](../images/accept-request.png)
 
-8. Now we have peering set up!  Make note of your peering connection id.  YOu can paste this into your file in Cloud9.
+8. Now we have peering set up!  Make note of your peering connection id.  You can paste this into your file in Cloud9.
 
 #### Update DNS 
 We want to configure our peering connection DNS settings so that queries from the peer VPC resolve to private IP addresses in your local VPC.  We will need to do this for **VPC2** and **VPC4**.
@@ -79,7 +79,7 @@ We want to configure our peering connection DNS settings so that queries from th
 6. At the end of these steps, switch to **Region 2** called **Cross Region**.  This has the VPCs with the CIDR ranges `10.3.0.0/16` and `10.4.0.0/16`.
 
 #### Update Route Tables
-9. You still need to add a route in your route table.  You can do this by clicking on **Route Tables** in the left hand pane from the VPC console. 
+9. You still need to add a route in your route table.  You can do this by clicking on **Route Tables** in the left-hand pane from the VPC console. 
 
 9. From the top left-hand side of the screen, click in the **Select a VPC** drop down and select **VPC4**.  This will filter the route tables to *only* VPC4.
 
@@ -98,8 +98,6 @@ We want to configure our peering connection DNS settings so that queries from th
 17. Once complete, *change regions* in the top right-hand corner back to your primary region.  You will need to update your **Route Tables** for VPC2.
 18. Follow the same steps from before, to update your **VPC2 Public Route tables**.  This time, the Destination will be `10.4.0.0/16`
 
-20. 
-
 
 #### Using PrivateLink Cross Region
 
@@ -112,14 +110,14 @@ We want to configure our peering connection DNS settings so that queries from th
 1.  You also have a Cloud9 IDE in your *Region 2* that was launched in your *Cross Region* CloudFormation stack.  From the *2nd Region*, go back to the **CloudFormation** console and copy the link from the Outputs tab into your browser to launch.
 2. You will need your *VPC endpoint DNS name* from VPC2.  From another tab, browse to the **VPC Console** for your primary region where the *ARC311* CloudFormation Stack is deployed.
 3. Click on **Endpoints* in the left-hand pane, select the proper endpoint for our PrivateLink Service, and copy the DNS name.
-4. Click back to your Cloud9 IDE and in the terminal resolve DNS for the endpoint by running the following. **Replace your DNS name!**
+4. Click back to your Cloud9 IDE and in the terminal resolve DNS for the endpoint by running the following, **making sure to update with *your* DNS name!**
 
 	`dig +short REPLACE-ME-vpce-0f14daf3354145ee2-1kx05bsg.vpce-svc-0545a2b2f1afbd610.us-east-1.vpce.amazonaws.com`
 	
 	> This should return two IP addresses from VPC 2 CIDR range (10.200.0.0/16)
 
 5. To verify that you are in a different VPC, run `ifconfig` from the terminal.  `eth0` should have an IP address like **10.4.0.144**.
-6. Finally, let's call our cross region *Product Service* over PrivateLink.  Run the following and **be sure to update with your own DNS name:**
+6. Finally, let's call our cross region *Product Service* over PrivateLink.  Run the following and again, **be sure to update with your own DNS name:**
 
 
 `

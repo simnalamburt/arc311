@@ -10,7 +10,7 @@ If you recall, we enabled VPC flow logs in Lab 1.  We can now query these logs u
 	`CREATE DATABASE awslogs;`
 4. Click **Run Query**.
 5. From the left-hand pane, click the **Database** drop down and select your new `awslogs` database.
-6. Click the `+` tab to open a new query and paste the following in to the New Query.  You will need to update the location on **Line 20** with you **S3 Bucket** and path.  If you are unsure of the account ID and region code, you can browse to the S3 console, click on your bucket and follow to path.  
+6. Click the `+` tab to open a new query and paste the following in to the New Query.  You will need to update the location on **Line 20** with your **S3 Bucket** and path.  If you are unsure of the account ID and region code, you can browse to the S3 console, click on your bucket and follow to path.  
 
 	```sql
 	CREATE EXTERNAL TABLE IF NOT EXISTS vpc_flow_logs (
@@ -37,7 +37,7 @@ If you recall, we enabled VPC flow logs in Lab 1.  We can now query these logs u
 	
 	```
 
-7.  Now the table is create, let's create the partiitons.  Click the `+` to open a new query tab.  Paste in the following and update`YY/MM/dd` with the proper dates (ex. `2018-11-26`)
+7.  Now that the table is created, let's create the partiitons.  Click the `+` to open a new query tab.  Paste in the following and update`YY/MM/dd` with the proper dates (ex. `2018-11-26`)
 
 
 	```sql
@@ -48,7 +48,7 @@ If you recall, we enabled VPC flow logs in Lab 1.  We can now query these logs u
 	```
 
 
-8.  Open a new query tab and paste the following to aggregate all the REJECT action.
+8.  Open a new query tab and paste the following to aggregate all the REJECT actions.
 
 	```sql
 	SELECT sourceaddress, count(*) cnt
@@ -58,7 +58,7 @@ If you recall, we enabled VPC flow logs in Lab 1.  We can now query these logs u
 	ORDER BY cnt desc
 	LIMIT 25;
 	``` 
-9.  Run the following to see all requests to you PrivateLink endpoint address.  Be sure to replace with the proper address that was returned when you performed a `dig +short` against the DNS name of your VPC endpoint.
+9.  Run the following to see all requests to your PrivateLink endpoint address.  Be sure to replace with the proper address that was returned when you performed a `dig +short` against the DNS name of your VPC endpoint.
 
 	```sql
 	SELECT day_of_week(from_iso8601_timestamp(dt)) AS
@@ -75,7 +75,7 @@ If you recall, we enabled VPC flow logs in Lab 1.  We can now query these logs u
 	WHERE destinationaddress = '10.200.0.31'
 	LIMIT 100;
 	```
-10.  Feel free to play around with the queries and write you own to analyze your flow log data!
+10.  Feel free to play around with the queries and write your own to analyze your flow log data!
 
 
 #### You have now completed all the modules in this workshop!  Thank you! 

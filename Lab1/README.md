@@ -49,7 +49,7 @@ Some of our traffic will be using public IP addresses and then we will make our 
 
 	![VPC Console](../images/vpc-console1.png)
 
-4. From the top left-hand side of the VPC console, click in the **Select a VPC** drop down and select VPC1.  This VPC has your application running in it.  This is a containerized application that ECS is managing.  
+4. From the top left-hand side of the VPC console, click in the **Select a VPC** drop down and select **VPC1**.  This VPC has your application running in it.  This is a containerized application that ECS is managing.  
 
 	![VPC Console](../images/select-vpc1.png)
 	
@@ -125,7 +125,7 @@ While it may seem odd to use an IDE to use a tool like curl, Cloud9 comes with a
 > We just accessed our service that lives in a private subnet in a different VPC via an Application Load Balancer in a public subnet.  We can continue to build services that have a public endpoint, or we can make the service private.  
 
 ### Create NLB for PrivateLink
-Now we know that the service is functional and can be reached via the public internet.  There are many reasons why you may not want your service to be accessible to the public internet, so let's set up *Private link* so that our Cloud9 instance or another microservice in VPC2 can connect. 
+Now we know that the service is functional and can be reached via the public internet.  There are many reasons why you may not want your service to be accessible to the public internet, so let's set up *PrivateLink* so that our Cloud9 instance or another microservice in VPC2 can connect. 
 
 First, we need to create an *Endpoint Service* in **VPC1** for our application.  An *Endpoint Service* is an application in your VPC that you configure as an **AWS PrivateLink service**.
 
@@ -227,9 +227,7 @@ We now have a Network load balancer, but now we need to create a website and pro
 
 10.  From the terminal, we will create the new ECS services for the *Website Service* and the *Product Service*.  Run the following to create the **Product Service** referencing the JSON we just saved.
 
-	```
-	aws ecs create-service --service-name new-product-service --cluster ARC311 --cli-input-json file://new-product-service.json
-	```
+	```aws ecs create-service --service-name new-product-service --cluster ARC311 --cli-input-json file://new-product-service.json```
 	
 11. Next, run the following to create the **Website Service**.
 
@@ -262,7 +260,7 @@ If you curl our new backend service (like we did before), the request will fail.
 
 5. Now that you have created an *endpoint service*, you can control which service consumers can create an interface endpoint to connect to your service. Service consumers are IAM principals—IAM users, IAM roles, and AWS accounts.
 
-19. You should still be in the *VPC console*, under Endpoint Services. Select your **Endpoint Service**.
+19. You should still be in the *VPC console*, under *Endpoint Services*. Select your **Endpoint Service**.
 
 20. In the lower pane, click on the **Whitelisted Principals** tab.  
 	* Next, Choose **Add principals to whitelist**.  
@@ -279,7 +277,7 @@ At this point, we have our service behind a NLB and configured as an *Endpoint S
 
 ![Create Endpoint Service](../images/endpoint-service-diagram.png)
 
-1.  Let's create an interface endpoint in VPC2 so that our *Cloud9* instance, or any other service we might spin up in VPC2 can communicate to our service in VPC1.
+1.  Let's create an interface endpoint in **VPC2** so that our *Cloud9* instance, or any other service we might spin up in VPC2 can communicate to our service in VPC1.
 
 2. From the *VPC Console*, under **Endpoint Services**, make sure your Endpoint Service is selected.  	
 	* You will need to copy the **Service Name** from the *Details* tab, which should look similar to: `com.amazonaws.vpce.us-east-2.vpce-svc-0e6f539a5f123456a`
@@ -317,16 +315,15 @@ At this point, we have our service behind a NLB and configured as an *Endpoint S
 
 10.  First, let's resolve DNS for our **VPC Endpoint**. Run the following in you *Cloud9 Terminal*.  *Be sure to replace the DNS name with YOUR VPC endpoint DNS name!*
 
-	```
-	dig +short REPLACE-ME-vpce-0f14daf3354145ee2-1kx05bsg.vpce-svc-0545a2b2f1afbd610.us-east-1.vpce.amazonaws.com
-	```
+
+	```dig +short REPLACE-ME-vpce-0f14daf3354145ee2-1kx05bsg.vpce-svc-0545a2b2f1afbd610.us-east-1.vpce.amazonaws.com```
 	
 11.  Two addresses should be returned.  You can also try this with the bottom 2 zonal DNS names that you saw in our console.
 
-10. Now we can test our service again!  From the Cloud9 IDE, we will use curl against the DNS name of our endpoint service.  Paste the following in ther terminal from Cloud9.
+10. Now we can test our service again!  From the Cloud9 IDE, we will use curl against the DNS name of our endpoint service adding a `/products` on the end to rech our product service.  Paste the following in ther terminal from Cloud9.
 
 	```
-	curl -vo /dev/null REPLACE-ME-vpce-0f14daf3354145ee2-1kx05bsg.vpce-svc-0545a2b2f1afbd610.us-east-1.vpce.amazonaws.com
+	curl -vo /dev/null REPLACE-ME-vpce-0f14daf3354145ee2-1kx05bsg.vpce-svc-0545a2b2f1afbd610.us-east-1.vpce.amazonaws.com/products
 	```
 	
 **Our architecture now looks like this:**

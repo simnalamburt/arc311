@@ -45,7 +45,7 @@ Some of our traffic will be using public IP addresses and then we will make our 
 
 	![Cloudformation Console](../images/s3-output.png)
 
-3.  Open the [*VPC console*](https://console.aws.amazon.com/vpc/) in a *NEW* tab in your browser.  *Look in the top right-had corner and confirm that you are in the same region you launched your template in!*  This will save a lot of back and forth in the management console.  From the right-hand navigation pane, click **Your VPCs**.  You should see 2 VPCs created by CloudFormation as well as the default VPC.
+3.  Open the [*VPC console*](https://console.aws.amazon.com/vpc/) in a *NEW* tab in your browser.  *Look in the top right-had corner and confirm that you are in the same region you launched your template in!*  This will save a lot of back and forth in the management console.  From the left-hand navigation pane, click **Your VPCs**.  You should see 2 VPCs created by CloudFormation as well as the default VPC.
 
 	![VPC Console](../images/vpc-console1.png)
 

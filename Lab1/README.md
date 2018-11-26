@@ -227,7 +227,7 @@ We now have a Network load balancer, but now we need to create a website and pro
 
 10.  From the terminal, we will create the new ECS services for the *Website Service* and the *Product Service*.  Run the following to create the **Product Service** referencing the JSON we just saved.
 
-	```aws ecs create-service --service-name new-product-service --cluster ARC311 --cli-input-json file://new-product-service.json```
+	`aws ecs create-service --service-name new-product-service --cluster ARC311 --cli-input-json file://new-product-service.json`
 	
 11. Next, run the following to create the **Website Service**.
 
@@ -316,15 +316,13 @@ At this point, we have our service behind a NLB and configured as an *Endpoint S
 10.  First, let's resolve DNS for our **VPC Endpoint**. Run the following in you *Cloud9 Terminal*.  *Be sure to replace the DNS name with YOUR VPC endpoint DNS name!*
 
 
-	```dig +short REPLACE-ME-vpce-0f14daf3354145ee2-1kx05bsg.vpce-svc-0545a2b2f1afbd610.us-east-1.vpce.amazonaws.com```
+	`dig +short REPLACE-ME-vpce-0f14daf3354145ee2-1kx05bsg.vpce-svc-0545a2b2f1afbd610.us-east-1.vpce.amazonaws.com`
 	
 11.  Two addresses should be returned.  You can also try this with the bottom 2 zonal DNS names that you saw in our console.
 
 10. Now we can test our service again!  From the Cloud9 IDE, we will use curl against the DNS name of our endpoint service adding a `/products` on the end to rech our product service.  Paste the following in ther terminal from Cloud9.
 
-	```
-	curl -vo /dev/null REPLACE-ME-vpce-0f14daf3354145ee2-1kx05bsg.vpce-svc-0545a2b2f1afbd610.us-east-1.vpce.amazonaws.com/products
-	```
+	`curl -vo /dev/null REPLACE-ME-vpce-0f14daf3354145ee2-1kx05bsg.vpce-svc-0545a2b2f1afbd610.us-east-1.vpce.amazonaws.com/products`
 	
 **Our architecture now looks like this:**
 

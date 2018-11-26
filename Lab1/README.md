@@ -227,8 +227,10 @@ We now have a Network load balancer, but now we need to create a website and pro
 
 10.  From the terminal, we will create the new ECS services for the *Website Service* and the *Product Service*.  Run the following to create the **Product Service** referencing the JSON we just saved.
 
-	`aws ecs create-service --service-name new-product-service --cluster ARC311 --cli-input-json file://new-product-service.json`
-	
+	```
+	aws ecs create-service --service-name new-product-service --cluster ARC311 --cli-input-json file://new-product-service.json
+	```
+
 11. Next, run the following to create the **Website Service**.
 
 	```
